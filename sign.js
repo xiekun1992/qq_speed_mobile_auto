@@ -9,7 +9,7 @@ const nm = Nightmare({
 });
 
 nm
-  .goto(b)
+  .goto(a)
   .wait('#signButton')
   .click('#signButton')
   .wait('body > div:nth-child(1) > div.bang-dialog-dialog-bt > a')
