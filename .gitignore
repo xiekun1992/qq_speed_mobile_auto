@@ -1,3 +1,4 @@
 /node_modules
 package-lock.json
 /screen_shots/*.png
+/config.json
