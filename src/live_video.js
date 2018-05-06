@@ -1,24 +1,9 @@
 const Nightmare = require('nightmare');
+const { entries } = require('../config');
 
-const waitTimeout = 1/6 * 60 * 1000;
-const nm = Nightmare({
-  // show: true,
-  waitTimeout
-});
-const entry = [
-  {
-    url: 'http://qt.qq.com/php_cgi/plive/speed/html/index.html?gameId=10013&roleName=%E5%A4%9C%E5%A4%9C%E9%85%B1oc&uin=2195619068&uniqueRoleId=162532724&token=8y7dGRcE&userId=75507990&nickname=Satan&serverName=&roleId=2195619068&serverId=0&areaId=1&roleJob=&isMainRole=1&areaName=%E7%94%B5%E4%BF%A1%E5%8C%BA&roleLevel=155&toUin=2195619068&',
-    account: 2195619068,
-    password: 'xiekun4559610300'
-  },
-  {
-    url: 'http://qt.qq.com/php_cgi/plive/speed/html/index.html?gameId=10013&roleName=%E4%B8%B6Guerlsseur&uin=840914927&uniqueRoleId=167249511&token=8y7dGRcE&userId=75507990&nickname=ordinary&serverName=&roleId=840914927&serverId=0&areaId=1&roleJob=&isMainRole=0&areaName=%E7%94%B5%E4%BF%A1%E5%8C%BA&roleLevel=140&toUin=840914927&',
-    account: 840914927,
-    password: 'xk/15727451939'
-  }
-]
+const waitTimeout = 1 * 60 * 1000;
 
-function login(entry) {
+function login(nm, entry) {
   console.log('login');
   return nm
     .wait('#dvGift > div > div > div.gin_gift_box > div.gin_hd > div.gin_extra > span > a')
@@ -30,14 +15,14 @@ function login(entry) {
     .wait('#go') // login button
     .click('#go')
     .then(() => {
-      showMsgInput(checksum);
+      showMsgInput(nm, checksum);
     }).catch(() => {
       nm.refresh();
-      login(entry);
+      login(nm, entry);
     });
 }
 
-function checksum() {
+function checksum(nm) {
   console.log('checksum');
   nm.options.waitTimeout = waitTimeout;
   return nm
@@ -64,37 +49,41 @@ function checksum() {
           nm.options.waitTimeout = milliseconds;
           return nm.wait(milliseconds);
         }).then(nm => {
-          checksum();
+          checksum(nm);
         }).catch(() => {
-          checksum();
+          checksum(nm);
         })
       }
-    }).catch(() => {
+    }).catch((err) => {
+      console.log('checksum catch error', err);
       nm.refresh();
-      showMsgInput(checksum);
+      checksum(nm);
+      // showMsgInput(nm, checksum);
     });
 }
-function showMsgInput(callback) {
+function showMsgInput(nm, callback) {
   console.log('showMsgInput');
   return nm
     .wait('#TabLIst > li > a[stype="chat"]') // 操作栏聊天选项
     .click('#TabLIst > li > a[stype="chat"]')
-    .wait(2000)
+    .wait(10000)
     .visible('#Dvinputmsg') // 消息输入框
     .then(isvisible => {
       console.log('showMsgInput', isvisible);
       if (isvisible) {
-        callback && callback();
+        callback && callback(nm);
       } else {
-        return showMsgInput();
+        nm.refresh();
+        showMsgInput(nm, callback);
       }
-    }).catch(() => {
+    }).catch((err) => {
+      console.log('showMsgInput catch error', err);
       nm.refresh();
-      showMsgInput(callback);
+      showMsgInput(nm, callback);
     });
 }
-function prepareLogin(entry) {
-  console.log('prepareLogin', entry);
+function prepareLogin(nm, entry) {
+  console.log('prepareLogin');
   return nm
     .wait('#Dvinputmsg > div.extra > div')
     .click('#Dvinputmsg > div.extra > div')
@@ -102,32 +91,40 @@ function prepareLogin(entry) {
     .then(isvisible => {
       console.log('prepareLogin', isvisible)
       if (isvisible) {
-        return login(entry);
+        return login(nm, entry);
       } else {
-        return prepareLogin(entry);
+        return prepareLogin(nm, entry);
       }
     }).catch(() => {
       nm.refresh();
-      // prepareLogin(entry);
-      showMsgInput(function () {
-        prepareLogin(entry);
+      // prepareLogin(nm, entry);
+      showMsgInput(nm, function () {
+        prepareLogin(nm, entry);
       });
     });
 }
 function start(entry) {
+  const nm = Nightmare({
+    // show: true,
+    pollInterval: 2000,
+    waitTimeout
+  });
   nm.options.waitTimeout = waitTimeout;
-  return nm
-    .goto(entry.url)
+  nm
+    .goto(entry.video_url)
     .wait('#DvRoomList > div.bd > ul')
     .wait(1000)
     .click('#DvRoomList > div.bd > ul > li:last-child') // 进入直播
     .then(() => {
-      showMsgInput(function () {
-        prepareLogin(entry);
+      showMsgInput(nm, function (nm) {
+        prepareLogin(nm, entry);
       });
     }).catch(() => {
       nm.refresh();
     });
 }
 
-start(entry[1]);
+for (const entry of entries) {
+  start(entry);
+}
+
