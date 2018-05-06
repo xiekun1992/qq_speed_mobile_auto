@@ -36,7 +36,7 @@ function checksum(nm) {
     }, '#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
     .then(sum => {
       console.log('flowers: ', sum);
-      if (sum > 1) {
+      if (sum > 0) {
         nm.end(() => console.log('app should close'));
       } else {
         nm.evaluate(selector => {
@@ -105,7 +105,7 @@ function prepareLogin(nm, entry) {
 }
 function start(entry) {
   const nm = Nightmare({
-    // show: true,
+    show: true,
     pollInterval: 2000,
     waitTimeout
   });
@@ -124,7 +124,4 @@ function start(entry) {
     });
 }
 
-for (const entry of entries) {
-  start(entry);
-}
-
+exports.start = start;

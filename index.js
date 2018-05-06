@@ -1,109 +1,16 @@
-const Nightmare = require('nightmare');
 const { entries } = require('./config');
+const treasure = require('./src/treasure');
+const liveVideo = require('./src/live_video');
 
 Date.prototype.format = function formatDate() {
   const date = this;
   return `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, 0)}-${(date.getDate() + '').padStart(2, 0)} ${(date.getHours() + '').padStart(2, 0)}'${(date.getMinutes() + '').padStart(2, 0)}'${(date.getSeconds() + '').padStart(2, 0)}.${date.getMilliseconds()}`;
 }
 
-// 自动每日寻宝
-function checkLeftTimes(nm) {
-  // 领取上次寻宝的奖励，如果显示了的话
-  nm
-    .visible('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
-    .then(isvisible => {
-      if (isvisible) {
-        nm
-          .wait(1000)
-          .screenshot(`./screen_shots/${new Date().format()}.png`) // 记录奖励
-          .wait(1000)
-          .click('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
-      }
-    })
-  nm
-    .wait('#leftTimes')
-    .wait(3000)
-    .evaluate(selector => {
-      return +document.querySelector(selector).innerText;
-    }, '#leftTimes')
-    .then(times => {
-      if (times > 0) {
-        huntTreasure(nm);
-      } else {
-        console.log('times used up', times);
-        nm.end(() => console.log('app should close'));
-      }
-    })
-    .catch(console.error);
-}
-function huntTreasure(nm) {
-  return nm
-    .wait('#application > div.tabs > ul')
-    .evaluate(selector => {
-      const ele = document.querySelectorAll(selector);
-      return ele[ele.length - 1].click();
-    }, '#application > div.tabs > ul > li:not(.suo)')
-    // 进入寻宝
-    .wait('#maps_2 > li div.tit-flog')
-    .wait(1000)
-    .click('#maps_2 > li div.tit-flog')
-    .wait('#application > div.tabs > div.tabs-bd > div.btn-warp > div.anniu > a:nth-child(1)')
-    .wait(1000)
-    .click('#application > div.tabs > div.tabs-bd > div.btn-warp > div.anniu > a:nth-child(1)')
-    .wait('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
-    .wait(1000)
-    .screenshot(`./screen_shots/${new Date().format()}.png`) // 记录奖励
-    .wait(1000)
-    .click('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
-    // 等待寻宝完成
-    .wait(1.01 * 10 * 60 * 1000)
-    // 领取奖励
-    .wait('#result_show')
-    .screenshot(`./screen_shots/${new Date().format()}.png`)
-    .click('#result_show > div > div.btn-box > a')
-    .then((res) => {
-      console.log(res);
-      checkLeftTimes(nm);
-    })
-    .catch(console.error);
-}
-function start(entry) {
-  const nm = Nightmare({
-    show: true,
-    waitTimeout: 1000 * 60 * 20
-  });
-
-  return nm.goto(entry.url)
-    .wait('#u') // account
-    .type('#u', entry.account)
-    .wait('#p') // password
-    .type('#p', entry.password)
-    .wait('#go') // login button
-    .screenshot(`./screen_shots/${new Date().format()}.png`)
-    .click('#go')
-    .wait('#application > div.tabs > ul')
-    .evaluate(selector => {
-      return window.getComputedStyle(document.querySelector(selector)).display === 'none'? true: false;
-    },'#treasurenormal_popbox') // 检测当前是否在寻宝
-    .then(res => {
-      if (res) {
-        checkLeftTimes(nm);
-      } else {
-        nm
-          .wait(selector => {
-            return window.getComputedStyle(document.querySelector(selector)).display === 'none'? true: false;
-          }, '#dig_tip_container')
-          .then(res => {
-            checkLeftTimes(nm);
-          });
-      }
-    })
-    .catch(console.error);
-}
-
 function main() {
   for (const entry of entries) {
-    start(entry);
+    treasure.start(entry);
+    liveVideo.start(entry);
   }
 }
 // 需要记录日志，包括当前寻宝次数，领取了那些奖励，一共寻了多少次包宝，在几星图
