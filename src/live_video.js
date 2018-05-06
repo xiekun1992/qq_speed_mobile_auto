@@ -105,7 +105,7 @@ function prepareLogin(nm, entry) {
 }
 function start(entry) {
   const nm = Nightmare({
-    show: true,
+    // show: true,
     pollInterval: 2000,
     waitTimeout
   });

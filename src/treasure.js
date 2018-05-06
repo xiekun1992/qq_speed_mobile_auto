@@ -14,7 +14,7 @@ function checkLeftTimes(nm) {
           .click('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
       }
     })
-  nm
+  return nm
     .wait('#leftTimes')
     .wait(3000)
     .evaluate(selector => {
@@ -22,13 +22,12 @@ function checkLeftTimes(nm) {
     }, '#leftTimes')
     .then(times => {
       if (times > 0) {
-        huntTreasure(nm);
+        return huntTreasure(nm);
       } else {
         console.log('times used up', times);
-        nm.end(() => console.log('app should close'));
+        return nm.end().then(res => 0);
       }
-    })
-    .catch(console.error);
+    });
 }
 function huntTreasure(nm) {
   return nm
@@ -57,13 +56,12 @@ function huntTreasure(nm) {
     .click('#result_show > div > div.btn-box > a')
     .then((res) => {
       console.log(res);
-      checkLeftTimes(nm);
-    })
-    .catch(console.error);
+      return checkLeftTimes(nm);
+    });
 }
 function start(entry) {
   const nm = Nightmare({
-    show: true,
+    // show: true,
     waitTimeout: 1000 * 60 * 20
   });
 
@@ -81,18 +79,20 @@ function start(entry) {
     },'#treasurenormal_popbox') // 检测当前是否在寻宝
     .then(res => {
       if (res) {
-        checkLeftTimes(nm);
+        return checkLeftTimes(nm);
       } else {
-        nm
+        return nm
           .wait(selector => {
             return window.getComputedStyle(document.querySelector(selector)).display === 'none'? true: false;
           }, '#dig_tip_container')
           .then(res => {
-            checkLeftTimes(nm);
+            return checkLeftTimes(nm);
           });
       }
-    })
-    .catch(console.error);
+    }).catch(err => {
+      console.log(err);
+      return nm.end().then(console.log);
+    });
 }
 
 exports.start = start;
