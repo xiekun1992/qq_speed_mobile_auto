@@ -32,6 +32,14 @@ Nightmare.action('clickLast', function (selector, done) {
   }, done, selector);
 });
 
+Nightmare.action('touch', function (selector, done) {
+  this.evaluate_now((selector) => {
+    const el = document.querySelector(selector);
+    let event = new TouchEvent('touchstart');
+    el.dispatchEvent(event);
+  }, done, selector);
+});
+
 // Nightmare.action('execUntilVisible', function (done) {
 //   this.evaluate_now((selector) => {
 //     let elem = document.querySelector(selector);
