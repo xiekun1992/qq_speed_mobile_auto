@@ -25,17 +25,19 @@ function checkLeftTimes(nm) {
         return huntTreasure(nm);
       } else {
         console.log('times used up', times);
-        return nm.end().then(res => 0);
+        huntTreasure(nm);
+        // return nm.end().then(res => 0);
       }
     });
 }
 function huntTreasure(nm) {
   return nm
     .wait('#application > div.tabs > ul')
-    .evaluate(selector => {
-      const ele = document.querySelectorAll(selector);
-      return ele[ele.length - 1].click();
-    }, '#application > div.tabs > ul > li:not(.suo)')
+    .clickLast('#application > div.tabs > ul > li:not(.suo)')
+    // .evaluate(selector => {
+    //   const ele = document.querySelectorAll(selector);
+    //   return ele[ele.length - 1].click();
+    // }, '#application > div.tabs > ul > li:not(.suo)')
     // 进入寻宝
     .wait('#maps_2 > li div.tit-flog')
     .wait(1000)
@@ -74,17 +76,13 @@ function start(entry) {
     .screenshot(`./screen_shots/${new Date().format()}.png`)
     .click('#go')
     .wait('#application > div.tabs > ul')
-    .evaluate(selector => {
-      return window.getComputedStyle(document.querySelector(selector)).display === 'none'? true: false;
-    },'#treasurenormal_popbox') // 检测当前是否在寻宝
+    .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
     .then(res => {
       if (res) {
         return checkLeftTimes(nm);
       } else {
         return nm
-          .wait(selector => {
-            return window.getComputedStyle(document.querySelector(selector)).display === 'none'? true: false;
-          }, '#dig_tip_container')
+          .wait('#dig_tip_container')
           .then(res => {
             return checkLeftTimes(nm);
           });

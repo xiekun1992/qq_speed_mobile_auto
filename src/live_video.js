@@ -29,10 +29,11 @@ function checksum(nm) {
     .click('#Dvinputmsg > div.extra > div')
     .wait(2000)
     .wait('#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.update_count')
-    .evaluate(selector => {
-      let sum = document.querySelectorAll(selector)[0].innerText;
-      return sum.slice(1);
-    }, '#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
+    // .evaluate(selector => {
+    //   let sum = document.querySelectorAll(selector)[0].innerText;
+    //   return sum.slice(1);
+    // }, '#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
+    .number('#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
     .then(sum => {
       console.log('flowers: ', sum);
       if (sum > 2) {

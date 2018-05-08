@@ -1,4 +1,5 @@
-const childProcess = require('child_process');
+// const childProcess = require('child_process');
+require('./src/utils');
 const { entries } = require('./config');
 const treasure = require('./src/treasure');
 const liveVideo = require('./src/live_video');
