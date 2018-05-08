@@ -25,8 +25,7 @@ function checkLeftTimes(nm) {
         return huntTreasure(nm);
       } else {
         console.log('times used up', times);
-        huntTreasure(nm);
-        // return nm.end().then(res => 0);
+        return nm.end().then(res => 0);
       }
     });
 }
@@ -34,10 +33,6 @@ function huntTreasure(nm) {
   return nm
     .wait('#application > div.tabs > ul')
     .clickLast('#application > div.tabs > ul > li:not(.suo)')
-    // .evaluate(selector => {
-    //   const ele = document.querySelectorAll(selector);
-    //   return ele[ele.length - 1].click();
-    // }, '#application > div.tabs > ul > li:not(.suo)')
     // 进入寻宝
     .wait('#maps_2 > li div.tit-flog')
     .wait(1000)

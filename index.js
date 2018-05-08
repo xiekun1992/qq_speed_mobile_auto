@@ -3,14 +3,14 @@ require('./src/utils');
 const { entries } = require('./config');
 const treasure = require('./src/treasure');
 const liveVideo = require('./src/live_video');
-
+const sign = require('./src/sign');
 
 Date.prototype.format = function formatDate() {
   const date = this;
   return `${date.getFullYear()}-${(date.getMonth() + 1 + '').padStart(2, 0)}-${(date.getDate() + '').padStart(2, 0)} ${(date.getHours() + '').padStart(2, 0)}'${(date.getMinutes() + '').padStart(2, 0)}'${(date.getSeconds() + '').padStart(2, 0)}.${date.getMilliseconds()}`;
 }
 process.env.show = true;
-const delay = 30 * 60 * 1000;
+const delay = 60 * 60 * 1000;
 // 每次执行结束后30分钟再次执行
 function exec(fn, args) {
   fn(args)
@@ -26,6 +26,7 @@ function exec(fn, args) {
 
 function main() {
   for (const entry of entries) {
+    exec(sign.start, entry);
     exec(treasure.start, entry);
     exec(liveVideo.start, entry);
   }
