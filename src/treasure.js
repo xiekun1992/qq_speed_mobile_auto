@@ -61,7 +61,7 @@ function huntTreasure(nm) {
 }
 function start(entry) {
   const nm = Nightmare({
-    // show: true,
+    show: process.env.show,
     waitTimeout: 1000 * 60 * 20
   });
 

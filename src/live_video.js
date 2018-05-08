@@ -1,5 +1,4 @@
 const Nightmare = require('nightmare');
-const { entries } = require('../config');
 
 const waitTimeout = 1 * 60 * 1000;
 
@@ -36,8 +35,8 @@ function checksum(nm) {
     }, '#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
     .then(sum => {
       console.log('flowers: ', sum);
-      if (sum > 0) {
-        nm.end(() => console.log('app should close'));
+      if (sum > 2) {
+        return nm.end().then(() => console.log('app should close'));
       } else {
         nm.evaluate(selector => {
           let time = document.querySelectorAll(selector)[0].innerText.split(':');
@@ -71,7 +70,7 @@ function showMsgInput(nm, callback) {
     .then(isvisible => {
       console.log('showMsgInput', isvisible);
       if (isvisible) {
-        callback && callback(nm);
+        return callback && callback(nm);
       } else {
         nm.refresh();
         showMsgInput(nm, callback);
@@ -93,33 +92,34 @@ function prepareLogin(nm, entry) {
       if (isvisible) {
         return login(nm, entry);
       } else {
-        return prepareLogin(nm, entry);
+        prepareLogin(nm, entry);
       }
     }).catch(() => {
       nm.refresh();
       // prepareLogin(nm, entry);
       showMsgInput(nm, function () {
-        prepareLogin(nm, entry);
+        return prepareLogin(nm, entry);
       });
     });
 }
 function start(entry) {
   const nm = Nightmare({
-    // show: true,
+    show: process.env.show,
     pollInterval: 2000,
     waitTimeout
   });
   nm.options.waitTimeout = waitTimeout;
-  nm
+  return nm
     .goto(entry.video_url)
     .wait('#DvRoomList > div.bd > ul')
     .wait(1000)
     .click('#DvRoomList > div.bd > ul > li:last-child') // 进入直播
     .then(() => {
-      showMsgInput(nm, function (nm) {
-        prepareLogin(nm, entry);
+      return showMsgInput(nm, function (nm) {
+        return prepareLogin(nm, entry);
       });
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err);
       nm.refresh();
     });
 }
