@@ -21,10 +21,7 @@ let carList = {1:{'carID':'10024','carName':'战车'},2:{'carID':'10071','carNam
 //     body += chunk;
 //   });
 //   res.on('end', () => {
-//     const sandbox = {
-//       carLength: 0,
-//       carList: {}
-//     };
+//     const sandbox = {};
 //     const script = new vm.Script(body);
 //     const context = vm.createContext(sandbox);
 //     script.runInContext(context);
@@ -52,7 +49,7 @@ for (let car in carList) {
   cars[carList[car].carID] = carList[car].carName;
 }
 
-let times = 5;
+let times = 10;
 function resolveName(nm, imageName) {
   return nm
     .wait(2500)
@@ -87,13 +84,14 @@ function guess(nm) {
             .wait(5000)
             .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
             .then(() => {
-              times = 5;
+              times = 10;
               return guess(nm);
             })
       //   }
       // })
   }
   times--;
+  console.log(times, '=========')
   return nm
     .wait('#inputName')
     .wait(1000)

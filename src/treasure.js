@@ -61,8 +61,8 @@ function start(entry) {
     show: process.env.show,
     waitTimeout: 1000 * 60 * 20
   });
-
-  return nm.goto(entry.treasure_url)
+  return nm
+    .goto(entry.treasure_url)
     .wait('#u') // account
     .type('#u', entry.account)
     .wait('#p') // password

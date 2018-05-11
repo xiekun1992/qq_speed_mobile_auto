@@ -4,7 +4,7 @@ const { entries } = require('./config');
 const treasure = require('./src/treasure');
 const liveVideo = require('./src/live_video');
 const sign = require('./src/sign');
-const guessCarn = require('./src/guess_car');
+const guessCar = require('./src/guess_car');
 
 Date.prototype.format = function formatDate() {
   const date = this;
@@ -30,7 +30,7 @@ function main() {
     // exec(sign.start, entry);
     // exec(treasure.start, entry);
     // exec(liveVideo.start, entry);
-    // exec(guessCar.start, entry);
+    exec(guessCar.start, entry);
   }
 }
 // 需要记录日志，包括当前寻宝次数，领取了那些奖励，一共寻了多少次包宝，在几星图
