@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "iconv-lite": "^0.4.23",
     "nightmare": "^3.0.1"
   }
 }
