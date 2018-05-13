@@ -1,5 +1,6 @@
 const fs = require('fs');
 const analyzer = require('./analyzer');
+require('../utils');
 
 // 定义超时
 const limit = 5 * 60 * 1000;
@@ -16,7 +17,8 @@ function analyze(options) {
     .race([analyzer.analyze(), timeout(limit)])
     .then(token => {
       // 如果文件不存在将自动创建
-      fs.appendFileSync(options.tokenPath, token);
+      fs.appendFileSync(options.tokenPath, `${new Date().format()} ${token}\n`);
+      return token;
     })
     .catch(err => {
       throw new Error(err);

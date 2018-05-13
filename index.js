@@ -29,7 +29,7 @@ function exec(fn, args) {
 
 function main() {
   analyze({ tokenPath })
-    .then(() => parse())
+    .then(parse)
     .then(entries => {
       for (const entry of entries) {
         // exec(sign.start, entry);
