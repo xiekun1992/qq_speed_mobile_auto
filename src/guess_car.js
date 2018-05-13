@@ -40,7 +40,7 @@ const req = http.request({
     if (JSON.stringify(sandbox.carList).length > JSON.stringify(carList)) {
       carList = sandbox.carList;
     }
-    fs.writeFileSync('./cars.js', JSON.stringify(carList, null, 2));
+    fs.writeFileSync(__dirname + '/cars.js', JSON.stringify(carList, null, 2));
 
     for (let car in carList) {
       cars[carList[car].carID] = carList[car].carName;
