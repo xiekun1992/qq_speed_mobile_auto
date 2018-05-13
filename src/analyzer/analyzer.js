@@ -18,6 +18,7 @@ function analyze () {
         ws.stdout.on('data', data => {
           if (/\/app\/actcenter\/index\/speed\/1/g.test(data)) {
             ws.kill();
+            mu.kill();
         
             let res = /\/app\/actcenter\/index\/speed\/1\?(\S+)/g.exec(data);
             if (res && res.length > 0) {
