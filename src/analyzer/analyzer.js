@@ -4,9 +4,6 @@ const querystring = require('querystring');
 function analyze () {
     return new Promise((resolve, reject) => {
         const mu = spawn('D:\\Program Files (x86)\\MuMu\\emulator\\nemu\\EmulatorShell\\NemuPlayer.exe', []);
-        // mu.stdout.on('data', data => {
-        //   console.log(`nemu player: ${data}`);
-        // });
         mu.stderr.on('data', data => {
             reject(`nemu player error due to: ${data}`);
         });
@@ -14,8 +11,10 @@ function analyze () {
             console.log(`nemu player exited with code ${code}`);
         });
         
-        const ws = spawn('D:\\Program Files\\Wireshark\\Wireshark.exe', [/*'-Y', 'http.request.uri.path == \"/app/actcenter/index/speed/1\"',*/ '-i', 'WLAN', '-k', '-w', '-']);
+        const ws = spawn('D:\\Program Files\\Wireshark\\tshark.exe', ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
         ws.stdout.on('data', data => {
+          data = data.toString();
+          console.log(data)
           if (/\/app\/actcenter\/index\/speed\/1/g.test(data)) {
             ws.kill();
             mu.kill();
@@ -29,9 +28,10 @@ function analyze () {
           }
         });
         ws.stderr.on('data', data => {
-          reject(`wireshark error due to: ${data}`);
+          console.log(`wireshark error due to: ${data}`);
         });
         ws.on('close', code => {
+          mu.kill();
           console.log(`wireshark exited with code ${code}`);
         });
     });
