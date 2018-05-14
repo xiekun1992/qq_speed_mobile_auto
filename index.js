@@ -45,11 +45,8 @@ function main(token) {
     
     
 const server = dgram.createSocket('udp4');
-server.bind(9000, '0.0.0.0', () => {
-  server.setBroadcast(true);
-  server.setMulticastTTL(1);
-  server.addMembership(multicastAddr);
-});
+let host = '0.0.0.0';
+let port = 9100;
 
 server.on('message', (message, remote) => {
   console.log(`receive message from: ${remote.address}:${remote.port} - ${message}`);
@@ -68,8 +65,15 @@ if (os.platform().includes('win')) { // windows 平台运行分析器，其他�
   analyze({ tokenPath }).then(token => {
     const timer = setInterval(() => {
       const msg = Buffer.from(`1:${token}`);
-      server.send(msg, 0, msg.length, 9001, multicastAddr);
+      server.send(msg, 0, msg.length, 9101, multicastAddr);
       console.log(`send ${msg} to the wire...`);
     }, 2000);
   });
-} 
+} else {
+  port = 9101;
+}
+server.bind(port, host, () => {
+  server.setBroadcast(true);
+  server.setMulticastTTL(128);
+  server.addMembership(multicastAddr);
+});
