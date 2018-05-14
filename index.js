@@ -4,7 +4,7 @@ const {
   sign,
   treasure,
   liveVideo,
-  guessCar
+  GuessCar
 } = require('./src/worker');
 require('./src/utils');
 
@@ -28,16 +28,23 @@ function exec(fn, args) {
 }
 
 function main() {
-  analyze({ tokenPath })
-    .then(parse)
-    .then(entries => {
-      for (const entry of entries) {
-        // exec(sign.start, entry);
-        // exec(treasure.start, entry);
-        // exec(liveVideo.start, entry);
-        exec(guessCar.start, entry);
-      }
-    });
+  // analyze({ tokenPath })
+  //   .then(parse)
+    // .then(entries => {
+    //   for (const entry of entries) {
+    //     // exec(sign.start, entry);
+    //     // exec(treasure.start, entry);
+    //     // exec(liveVideo.start, entry);
+    //     exec(guessCar.start, entry);
+    //   }
+    // });
+    for (const entry of parse()) {
+      // exec(sign.start, entry);
+      // exec(treasure.start, entry);
+      // exec(liveVideo.start, entry);
+      // exec(new GuessCar({}).start, entry);
+      new GuessCar({}).start(entry);
+    }
 }
 // 需要记录日志，包括当前寻宝次数，领取了那些奖励，一共寻了多少次包宝，在几星图
 main();
