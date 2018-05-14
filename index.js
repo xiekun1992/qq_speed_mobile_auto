@@ -50,6 +50,7 @@ let port = 9100;
 
 server.on('message', (message, remote) => {
   console.log(`receive message from: ${remote.address}:${remote.port} - ${message}`);
+  message = message.toString();
   switch(message.charAt(0)){
     case '1': 
       if(!token) {
