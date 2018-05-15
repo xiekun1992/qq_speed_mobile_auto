@@ -39,9 +39,9 @@ function exec(fn, args) {
 function main(token) {
   let entries = parse(token);
   for (const entry of entries) {
-    exec(sign.start, entry);
-    exec(treasure.start, entry);
-    exec(liveVideo.start, entry);
+    // exec(sign.start, entry);
+    // exec(treasure.start, entry);
+    // exec(liveVideo.start, entry);
     // exec(new GuessCar({}).start, entry);
     new GuessCar({}).start(entry);
   }
