@@ -17,12 +17,12 @@ function analyze(options) {
     .race([analyzer.analyze(), timeout(limit)])
     .then(token => {
       // 如果文件不存在将自动创建
-      logger.log(token);
+      logger.showAndLog(token);
       fs.writeFileSync(options.tokenPath, `${token}\n`);
       return token;
     })
     .catch(err => {
-      logger.log(err);
+      logger.showAndLog(err);
       throw new Error(err);
     });
 }

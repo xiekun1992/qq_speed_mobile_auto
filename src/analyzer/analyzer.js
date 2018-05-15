@@ -6,12 +6,10 @@ function analyze () {
     return new Promise((resolve, reject) => {
         const mu = spawn('D:\\Program Files (x86)\\MuMu\\emulator\\nemu\\EmulatorShell\\NemuPlayer.exe', []);
         mu.stderr.on('data', data => {
-            console.log(`nemu player error due to: ${data}`);
-            logger.log(`nemu player error due to: ${data}`);
+          logger.showAndLog(`nemu player error due to: ${data}`);
         });
         mu.on('close', code => {
-            console.log(`nemu player exited with code ${code}`);
-            logger.log(`nemu player exited with code ${code}`);
+          logger.showAndLog(`nemu player exited with code ${code}`);
         });
         
         const ws = spawn('D:\\Program Files\\Wireshark\\tshark.exe', ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
@@ -31,13 +29,11 @@ function analyze () {
           }
         });
         ws.stderr.on('data', data => {
-          console.log(`wireshark error due to: ${data}`);
-          logger.log(`wireshark error due to: ${data}`);
+          logger.showAndLog(`wireshark error due to: ${data}`);
         });
         ws.on('close', code => {
           mu.kill();
-          console.log(`wireshark exited with code ${code}`);
-          logger.log(`wireshark exited with code ${code}`);
+          logger.showAndLog(`wireshark exited with code ${code}`);
         });
     });
 }

@@ -27,11 +27,11 @@ logger.setPath(logPath);
 function exec(fn, args) {
   fn(args)
   .then(res => {
-    console.log('>>>>>res', res);
+    logger.showAndLog('>>>>>res', res);
     setTimeout(fn.bind(null, args), delay);
   })
   .catch(err => {
-    console.log('>>>>>error', err);
+    logger.showAndLog('>>>>>error', err);
     setTimeout(fn.bind(null, args), delay);
   });
 }
@@ -56,7 +56,8 @@ let wport = 9101; // 工作器端口
 let port = aport;
 
 server.on('message', (message, remote) => {
-  console.log(`receive message from: ${remote.address}:${remote.port} - ${message}`);
+  logger.showAndLog(`receive message from: ${remote.address}:${remote.port} - ${message}`);
+
   message = message.toString();
   switch(message.charAt(0)){
     case '1': 
@@ -83,7 +84,7 @@ if (os.platform().includes('win')) { // windows 平台运行分析器，其他�
     timer = setInterval(() => {
       const msg = Buffer.from(`1:${token}`);
       server.send(msg, 0, msg.length, wport, multicastAddr);
-      console.log(`send ${msg} to the wire...`);
+      logger.showAndLog(`send ${msg} to the wire...`);
     }, 2000);
   });
 } else {
