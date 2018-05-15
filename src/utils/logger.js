@@ -6,7 +6,7 @@ function setPath(path) {
 }
 
 function log(content) {
-    fs.appendFileSync(logPath, `${new Date().format()} - ${content}`);
+    fs.appendFileSync(logPath, `${new Date().format()} - ${content}\n`);
 }
 
 module.exports = {
