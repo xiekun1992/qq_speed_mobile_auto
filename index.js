@@ -18,7 +18,7 @@ process.env.show = true;
 const workingDir = __dirname;
 const delay = 60 * 60 * 1000;
 const tokenPath = workingDir + '/token.txt';
-const logPath = workingDir + '/logs/log.log';
+const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
 

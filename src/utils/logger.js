@@ -1,11 +1,11 @@
 const fs = require('fs');
-let logPath = __dirname + '/log.log';
+let logPath = __dirname;
 
 function setPath(path) {
     logPath = path;
 }
 function log(content) {
-    fs.appendFileSync(logPath, content);
+    fs.appendFileSync(`${logPath}/log.log`, content);
 }
 function showAndLog(content) {
     content = `${new Date().format()} - ${content}\n`;
