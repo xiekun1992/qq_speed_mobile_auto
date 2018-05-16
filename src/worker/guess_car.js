@@ -6,6 +6,7 @@ exports.GuessCar =  class GuessCar {
     this.nm = new Nightmare({show});
     this.times = 5;
     this.cars = {};
+    this.name = this.constructor.name;
 
     let carList = JSON.parse(fs.readFileSync(__dirname + '/cars.json'));
     for (let car in carList) {
@@ -60,11 +61,11 @@ exports.GuessCar =  class GuessCar {
             return Promise.reject('times used up');
           }
         }).catch(err => {
-          logger.showAndLog(`guess car >>> ${err}`);
+          logger.showAndLog(`${this.name} >>> ${err}`);
           return this.nm
             .end()
             .then(() => {
-              logger.showAndLog('guess car >>> app close');
+              logger.showAndLog(`${this.name} >>> app close`);
             });
         });
       
@@ -95,7 +96,7 @@ exports.GuessCar =  class GuessCar {
       //       return nm
       //         .click('body > div.pop_mask.pop_tips4 > div > div > div > a')
       //         .then(() => {
-      //           console.log('guess car is over');
+      //           console.log('${this.name} is over');
       //           return 0;
       //         })
       //     } else {
@@ -110,7 +111,7 @@ exports.GuessCar =  class GuessCar {
         // })
     }
     this.times--;
-    logger.showAndLog(`guess car >>> ${this.times} times left`);
+    logger.showAndLog(`${this.name} >>> ${this.times} times left`);
     return this.nm
       .wait('#inputName')
       .wait(1000)
@@ -119,11 +120,11 @@ exports.GuessCar =  class GuessCar {
         return document.querySelector(`#list_car>li:nth-child(${Math.abs(rect / 360) + 1})>img`).src;
       }, '#list_car')
       .then(url => {
-        logger.showAndLog(`guess car >>> image url: ${url}`);
+        logger.showAndLog(`${this.name} >>> image url: ${url}`);
         // return ;
         let imageId = parseInt(url.split('/').pop());
         let imageName = this.cars[imageId].split('');
-        logger.showAndLog(`guess car >>> image name: ${imageName}`);
+        logger.showAndLog(`${this.name} >>> image name: ${imageName}`);
         this.resolveName(imageName)
         .then(() => {
           return this.guessLoop();
