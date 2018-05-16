@@ -1,5 +1,6 @@
 const Nightmare = require('nightmare');
 const fs = require('fs');
+const logger = require('./src/utils/logger');
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show}) {
     this.nm = new Nightmare({show});
@@ -56,14 +57,14 @@ exports.GuessCar =  class GuessCar {
                 return this.guessLoop();
               }) // 开始游戏
           } else {
-            return Promise.reject('guess car times used up');
+            return Promise.reject('times used up');
           }
         }).catch(err => {
-          console.log(err)
+          logger.showAndLog(`guess car >>> ${err}`);
           return this.nm
             .end()
             .then(() => {
-              console.log('guess car app close');
+              logger.showAndLog('guess car >>> app close');
             });
         });
       
@@ -109,7 +110,7 @@ exports.GuessCar =  class GuessCar {
         // })
     }
     this.times--;
-    console.log(this.times, '=========')
+    logger.showAndLog(`guess car >>> ${this.times} times left`);
     return this.nm
       .wait('#inputName')
       .wait(1000)
@@ -118,11 +119,11 @@ exports.GuessCar =  class GuessCar {
         return document.querySelector(`#list_car>li:nth-child(${Math.abs(rect / 360) + 1})>img`).src;
       }, '#list_car')
       .then(url => {
-        console.log(url)
+        logger.showAndLog(`guess car >>> image url: ${url}`);
         // return ;
         let imageId = parseInt(url.split('/').pop());
         let imageName = this.cars[imageId].split('');
-        console.log(imageName);
+        logger.showAndLog(`guess car >>> image name: ${imageName}`);
         this.resolveName(imageName)
         .then(() => {
           return this.guessLoop();
