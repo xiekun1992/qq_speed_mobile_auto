@@ -1,6 +1,6 @@
 const Nightmare = require('nightmare');
 const fs = require('fs');
-const logger = require('./src/utils/logger');
+const logger = require('../utils/logger');
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show}) {
     this.nm = new Nightmare({show});
