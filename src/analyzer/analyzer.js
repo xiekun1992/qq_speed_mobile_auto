@@ -1,6 +1,28 @@
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const querystring = require('querystring');
 const logger = require('../utils/logger');
+
+
+function kill(pid) {
+  exec(`taskkill /PID ${pid} /F /T`, (err, stdout, stderr) => {
+    if (err) {
+      logger.showAndLog(err); 
+      throw err;
+    }
+    logger.showAndLog(stdout);
+    logger.showAndLog(stderr);
+  });
+}
+function killNemu() {
+  exec(`taskkill /IM NemuBooter.exe /IM NemuPlayer.exe /IM NemuSVC.exe /IM NemuHeadless.exe /F /T`, (err, stdout, stderr) => {
+    if (err) {
+      logger.showAndLog(err); 
+      // throw err;
+    }
+    logger.showAndLog(stdout);
+    logger.showAndLog(stderr);
+  });
+}
 
 function analyze () {
     return new Promise((resolve, reject) => {
@@ -8,8 +30,8 @@ function analyze () {
         mu.stderr.on('data', data => {
           logger.showAndLog(`nemu player error due to: ${data}`);
         });
-        mu.on('close', code => {
-          logger.showAndLog(`nemu player exited with code ${code}`);
+        mu.on('close', (code, signal) => {
+          logger.showAndLog(`nemu player exited with code ${code}, signal ${signal}`);
         });
         
         const ws = spawn('D:\\Program Files\\Wireshark\\tshark.exe', ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
@@ -17,8 +39,10 @@ function analyze () {
           data = data.toString();
           // console.log(data)
           if (/\/app\/actcenter\/index\/speed\/1/g.test(data)) {
+            // console.log(mu.pid)
             ws.kill();
-            mu.kill();
+            // killNemu();
+            // mu.kill();
         
             let res = /\/app\/actcenter\/index\/speed\/1\?(\S+)/g.exec(data);
             if (res && res.length > 0) {
@@ -31,9 +55,10 @@ function analyze () {
         ws.stderr.on('data', data => {
           logger.showAndLog(`wireshark error due to: ${data}`);
         });
-        ws.on('close', code => {
-          mu.kill();
-          logger.showAndLog(`wireshark exited with code ${code}`);
+        ws.on('close', (code, signal) => {
+          // mu.kill();
+          killNemu();
+          logger.showAndLog(`wireshark exited with code ${code}, signal ${signal}`);
         });
     });
 }
