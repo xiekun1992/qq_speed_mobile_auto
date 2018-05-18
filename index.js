@@ -73,7 +73,17 @@ server.on('message', (message, remote) => {
     case '2': 
       // 分析器停止发送信息
       clearInterval(timer);
-      server.close();
+      // 10秒后关闭
+      logger.showAndLog('ready to terminate analyzer process in 10s');
+      let time = 10;
+      setTimeout(() => {
+        logger.showAndLog(`${time}s left`);
+        if (time-- > 0) {
+          logger.showAndLog('analyzer process has been terminated');
+          server.close();
+          process.exit(0);
+        }
+      }, 1000);
     break; // 工作器发送的内容
   }
 });
@@ -81,11 +91,11 @@ server.on('message', (message, remote) => {
 let timer;
 if (os.platform().includes('win')) { // windows 平台运行分析器，其他平台运行工作器
   analyze({ tokenPath }).then(token => {
-    timer = setInterval(() => {
-      const msg = Buffer.from(`1:${token}`);
-      server.send(msg, 0, msg.length, wport, multicastAddr);
-      logger.showAndLog(`send ${msg} to the wire...`);
-    }, 2000);
+    // timer = setInterval(() => {
+    //   const msg = Buffer.from(`1:${token}`);
+    //   server.send(msg, 0, msg.length, wport, multicastAddr);
+    //   logger.showAndLog(`send ${msg} to the wire...`);
+    // }, 2000);
   });
 } else {
   port = wport
