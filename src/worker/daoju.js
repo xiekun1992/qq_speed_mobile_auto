@@ -94,6 +94,7 @@ exports.Daoju = class Daoju {
     start() {
         logger.showAndLog(`${this.name} >>> start`);
         return this.nm
+            .cookies.clearAll()
             .goto(this.entry.daoju_url)
             .wait('#switcher_plogin')
             .click('#switcher_plogin')
@@ -108,7 +109,7 @@ exports.Daoju = class Daoju {
             .title()
             .then((title) => {
                 if (!title) {
-                    throw new Error(false);
+                    throw new Error('tencent captcha coming');
                 }
                 return this.sign();
             })
