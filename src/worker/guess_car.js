@@ -2,8 +2,9 @@ const Nightmare = require('nightmare');
 const fs = require('fs');
 const logger = require('../utils/logger');
 exports.GuessCar =  class GuessCar {
-  constructor ({show = process.env.show}) {
+  constructor ({show = process.env.show, entry}) {
     this.nm = new Nightmare({show});
+    this.entry = entry;
     this.times = 5;
     this.cars = {};
     this.name = this.constructor.name;
@@ -13,9 +14,9 @@ exports.GuessCar =  class GuessCar {
       this.cars[carList[car].carID] = carList[car].carName;
     }
   }
-  start(entry) {
+  start() {
     return this.nm
-    .goto(entry.guess_car_url)
+    .goto(this.entry.guess_car_url)
     .wait('#unlogin > a')
     .click('#unlogin > a')
     .wait(3000)
@@ -27,9 +28,9 @@ exports.GuessCar =  class GuessCar {
       this.nm
         .goto(url)
         .wait('#u') // account
-        .type('#u', entry.account)
+        .type('#u', this.entry.account)
         .wait('#p') // password
-        .type('#p', entry.password)
+        .type('#p', this.entry.password)
         .wait('#go') // login button
         .click('#go')
         .wait(3000)
@@ -41,7 +42,7 @@ exports.GuessCar =  class GuessCar {
         .wait(1000)
         .wait('#roleContentId_speed')
         .wait(1500)
-        .select('#roleContentId_speed', entry.account)
+        .select('#roleContentId_speed', this.entry.account)
         .wait(1000)
         .click('#confirmButtonId_speed')
         .wait(1000)
