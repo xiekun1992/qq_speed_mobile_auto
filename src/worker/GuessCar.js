@@ -4,7 +4,10 @@ const logger = require('../utils/logger');
 
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show, entry}) {
-    this.nm = new Nightmare({show});
+    this.nm = new Nightmare({
+      show,
+      waitTimeout: 10000
+    });
     this.entry = entry;
     this.times = 5;
     this.cars = {};
@@ -20,9 +23,12 @@ exports.GuessCar =  class GuessCar {
     .goto(this.entry.guess_car_url)
     .waitUntilVisible('#unlogin > a')
     .click('#unlogin > a')
+    .wait(2000) // 等待iframe加载完毕
     .waitUntilVisible('#loginFrame')
+    .wait(2000)
     .src('#loginFrame')
     .then((url) => {
+      logger.showAndLog(`${this.name} >>> get login frame src: ${url}`);
       return this.nm
         .goto(url)
         .waitUntilVisible('#u') // account
@@ -31,6 +37,7 @@ exports.GuessCar =  class GuessCar {
         .type('#p', this.entry.password)
         .waitUntilVisible('#go') // login button
         .click('#go')
+        .wait(2000) // 会有页面跳转刷新，等待结束继续
         .waitUntilVisible('#logined > span:nth-child(2) > a')
         .click('#logined > span:nth-child(2) > a')
         .waitUntilVisible('#areaContentId_speed')
@@ -39,12 +46,11 @@ exports.GuessCar =  class GuessCar {
         .select('#roleContentId_speed', this.entry.account)
         .waitUntilVisible('#confirmButtonId_speed')
         .click('#confirmButtonId_speed')
-        .wait(1000)
+        .wait(3000)
         .evaluate((selector) => {
           return document.querySelector(selector).children.length;
         }, '#stamina')
         .then(res => {
-          // return guess(nm);
           if (res > 0) {
             return this.nm
               .click('body > div.wrap > div > div > a')
@@ -90,24 +96,19 @@ exports.GuessCar =  class GuessCar {
   guessLoop() {
     if (this.times <= 0) {
       this.nm
-        .wait(5000)
-        .visible('body > div.pop_mask.pop_tips4 > div > div > div > a') // 提示次数用完的弹出框
-        .then(isvisible => {
-          if (isvisible) {
-            logger.showAndLog(`${this.name} >>> app close with times used up`);
-            return this.nm
-              .end()
-              .then(() => {
-                return true;
-              });
-          } else {
-            return this.nm
-              .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)') // 继续游戏的按钮
-              .then(() => {
-                this.times = 5;
-                return this.guessLoop();
-              })
-          }
+        .waitUntilVisible('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
+        .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)') // 继续游戏的按钮
+        .then(() => {
+          this.times = 5;
+          return this.guessLoop();
+        }).catch(err => {
+          // 不能继续猜车后等待超时退出
+          logger.showAndLog(`${this.name} >>> app close with times used up`);
+          return this.nm
+            .end()
+            .then(() => {
+              return true;
+            });
         })
     }
     this.times--;
@@ -117,7 +118,7 @@ exports.GuessCar =  class GuessCar {
       .wait(1000)
       .evaluate(selector => {
         let rect = parseInt(document.querySelector(selector).style.left) || 0;
-        return document.querySelector(`#list_car>li:nth-child(${Math.abs(rect / 360) + 1})>img`).src;
+        return document.querySelector(`#list_car>li:nth-child(${Math.ceil(Math.abs(rect / 360)) + 1})>img`).src;
       }, '#list_car')
       .then(url => {
         logger.showAndLog(`${this.name} >>> image url: ${url}`);
