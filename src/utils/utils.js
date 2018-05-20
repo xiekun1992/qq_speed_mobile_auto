@@ -46,18 +46,28 @@ Nightmare.action('touch', function (selector, done) {
   }, done, selector);
 });
 
-// Nightmare.action('execUntilVisible', function (done) {
-//   this.evaluate_now((selector) => {
-//     let elem = document.querySelector(selector);
-//     if (elem) {
-//       if (elem.offsetWidth > 0 && elem.offsetHeight > 0) {//visible
-
-//       }
-//     } else { // invisible
-
-//     }
-//   }, done, selector);
-// });
-
+Nightmare.action('waitUntilVisible', function (selector, done) {
+  const waitUntilVisible = () => {
+    this.evaluate_now(selector => {
+      const el = document.querySelectorAll(selector);
+      let visible = false;
+      if (el.length > 0){
+        visible = true;
+        for (let i = 0; i < el.length; i++) {
+          if (el[i].getBoundingClientRect().width == 0) {
+            visible = false;
+            break;
+          }
+        }
+      }
+      return visible;
+    }, (err, visible) => {
+      err && done(err);
+      visible && done(null, visible);
+      setTimeout(waitUntilVisible, 500);
+    }, selector);
+  }
+  waitUntilVisible();
+});
 
 module.exports = {};
