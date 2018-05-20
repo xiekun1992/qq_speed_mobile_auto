@@ -6,8 +6,8 @@ Date.prototype.format = function formatDate() {
 };
 
 
+// 提取文本中出现的第一组数字
 Nightmare.action('number', function (selector, done) {
-  // 提取文本中出现的第一组数字
   this.evaluate_now((selector) => {
     let text = document.querySelector(selector).innerText;
     let res = /(\-?\d*\.?\d+)/.exec(text);
@@ -17,7 +17,7 @@ Nightmare.action('number', function (selector, done) {
     return NaN;
   }, done, selector);
 });
-
+// 点击最后一个元素
 Nightmare.action('clickLast', function (selector, done) {
   this.evaluate_now((selector) => {
     const els = document.querySelectorAll(selector);
@@ -37,7 +37,7 @@ Nightmare.action('clickLast', function (selector, done) {
     }
   }, done, selector);
 });
-
+// 移动端触摸按下
 Nightmare.action('touch', function (selector, done) {
   this.evaluate_now((selector) => {
     const el = document.querySelector(selector);
@@ -45,7 +45,7 @@ Nightmare.action('touch', function (selector, done) {
     el.dispatchEvent(event);
   }, done, selector);
 });
-
+// 等到指定元素出现后或等待超时后再往下走
 Nightmare.action('waitUntilVisible', function (selector, done) {
   const waitUntilVisible = () => {
     this.evaluate_now(selector => {
@@ -68,6 +68,12 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
     }, selector);
   }
   waitUntilVisible();
+});
+// 获取html元素的src属性
+Nightmare.action('src', (selector, done) => {
+  this.evaluate_now(selector => {
+    return document.querySelector(selector).src;
+  }, done, selector);
 });
 
 module.exports = {};

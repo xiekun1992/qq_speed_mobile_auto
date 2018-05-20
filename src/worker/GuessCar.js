@@ -1,6 +1,7 @@
 const Nightmare = require('nightmare');
 const fs = require('fs');
 const logger = require('../utils/logger');
+
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show, entry}) {
     this.nm = new Nightmare({show});
@@ -17,36 +18,28 @@ exports.GuessCar =  class GuessCar {
   start() {
     return this.nm
     .goto(this.entry.guess_car_url)
-    .wait('#unlogin > a')
+    .waitUntilVisible('#unlogin > a')
     .click('#unlogin > a')
-    .wait(3000)
-    .wait('#loginFrame')
-    .evaluate(selector => {
-      return document.querySelector(selector).src;
-    }, '#loginFrame')
+    .waitUntilVisible('#loginFrame')
+    .src('#loginFrame')
     .then((url) => {
       return this.nm
         .goto(url)
-        .wait('#u') // account
+        .waitUntilVisible('#u') // account
         .type('#u', this.entry.account)
-        .wait('#p') // password
+        .waitUntilVisible('#p') // password
         .type('#p', this.entry.password)
-        .wait('#go') // login button
+        .waitUntilVisible('#go') // login button
         .click('#go')
-        .wait(3000)
-        .wait('#logined > span:nth-child(2) > a')
+        .waitUntilVisible('#logined > span:nth-child(2) > a')
         .click('#logined > span:nth-child(2) > a')
-        .wait('#areaContentId_speed')
-        .wait(1500)
+        .waitUntilVisible('#areaContentId_speed')
         .select('#areaContentId_speed', '1')
-        .wait(1000)
-        .wait('#roleContentId_speed')
-        .wait(1500)
+        .waitUntilVisible('#roleContentId_speed')
         .select('#roleContentId_speed', this.entry.account)
-        .wait(1000)
+        .waitUntilVisible('#confirmButtonId_speed')
         .click('#confirmButtonId_speed')
         .wait(1000)
-        // .click('body > div.wrap > div > div > a')
         .evaluate((selector) => {
           return document.querySelector(selector).children.length;
         }, '#stamina')
@@ -98,19 +91,18 @@ exports.GuessCar =  class GuessCar {
     if (this.times <= 0) {
       this.nm
         .wait(5000)
-        .visible('body > div.pop_mask.pop_tips4 > div > div > div > a')
+        .visible('body > div.pop_mask.pop_tips4 > div > div > div > a') // 提示次数用完的弹出框
         .then(isvisible => {
           if (isvisible) {
+            logger.showAndLog(`${this.name} >>> app close with times used up`);
             return this.nm
-              .click('body > div.pop_mask.pop_tips4 > div > div > div > a')
+              .end()
               .then(() => {
-                logger.showAndLog(`${this.name} >>> app close with times used up`);
-                return 0;
-              })
+                return true;
+              });
           } else {
             return this.nm
-              .wait(5000)
-              .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
+              .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)') // 继续游戏的按钮
               .then(() => {
                 this.times = 5;
                 return this.guessLoop();
