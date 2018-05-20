@@ -26,6 +26,7 @@ exports.Daoju = class Daoju {
                 .end()
                 .then(() => {
                     logger.showAndLog(`${this.name} >>> app close without luck draw`);
+                    return true;
                 });
         })
         .catch(err => {
@@ -55,6 +56,7 @@ exports.Daoju = class Daoju {
                         .end()
                         .then(() => {
                             logger.showAndLog(`${this.name} >>> app close after luck draw`);
+                            return true;
                         });
                 }
             })

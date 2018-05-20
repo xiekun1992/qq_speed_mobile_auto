@@ -25,7 +25,7 @@ exports.GuessCar =  class GuessCar {
       return document.querySelector(selector).src;
     }, '#loginFrame')
     .then((url) => {
-      this.nm
+      return this.nm
         .goto(url)
         .wait('#u') // account
         .type('#u', this.entry.account)
@@ -59,7 +59,13 @@ exports.GuessCar =  class GuessCar {
                 return this.guessLoop();
               }) // 开始游戏
           } else {
-            return Promise.reject('times used up');
+            logger.showAndLog(`${this.name} >>> times used up`);
+            return this.nm
+                .end()
+                .then(() => {
+                  logger.showAndLog(`${this.name} >>> app close`);
+                  return true;
+                });
           }
         }).catch(err => {
           logger.showAndLog(`${this.name} >>> ${err}`);
@@ -67,6 +73,7 @@ exports.GuessCar =  class GuessCar {
             .end()
             .then(() => {
               logger.showAndLog(`${this.name} >>> app close`);
+              return true;
             });
         });
       
@@ -89,27 +96,27 @@ exports.GuessCar =  class GuessCar {
   }
   guessLoop() {
     if (this.times <= 0) {
-      // nm
-      //   .wait(5000)
-      //   .visible('body > div.pop_mask.pop_tips4 > div > div > div > a')
-      //   .then(isvisible => {
-      //     if (isvisible) {
-      //       return nm
-      //         .click('body > div.pop_mask.pop_tips4 > div > div > div > a')
-      //         .then(() => {
-      //           console.log('${this.name} is over');
-      //           return 0;
-      //         })
-      //     } else {
+      this.nm
+        .wait(5000)
+        .visible('body > div.pop_mask.pop_tips4 > div > div > div > a')
+        .then(isvisible => {
+          if (isvisible) {
             return this.nm
-              .wait(3000)
+              .click('body > div.pop_mask.pop_tips4 > div > div > div > a')
+              .then(() => {
+                logger.showAndLog(`${this.name} >>> app close with times used up`);
+                return 0;
+              })
+          } else {
+            return this.nm
+              .wait(5000)
               .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
               .then(() => {
                 this.times = 5;
                 return this.guessLoop();
               })
-        //   }
-        // })
+          }
+        })
     }
     this.times--;
     logger.showAndLog(`${this.name} >>> ${this.times} times left`);

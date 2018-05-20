@@ -24,38 +24,64 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [];
-let taskQueue = [];
-let maxParallelTasks = 4;
+let tasks = [GuessCar, Daoju];//[Daoju, GuessCar];
+let runningTasks = 0;
+let maxParallelTasks = 2;
+let taskNextPlanSetted = false; // 保证下次任务运行的全局唯一性
 
 logger.setPath(logPath);
-// 每次执行结束后30分钟再次执行
-function exec(fn, args) {
-  fn(args)
-  .then(res => {
-    logger.showAndLog('>>>>>res', res);
-    setTimeout(fn.bind(null, args), delay);
-  })
-  .catch(err => {
-    logger.showAndLog('>>>>>error', err);
-    setTimeout(fn.bind(null, args), delay);
+
+function watcher(taskInstance) {
+  return taskInstance.start().then((res) => {
+    logger.showAndLog(`task finished successfully: ${res}`);
+    return res;
+  }).catch((err) => {
+    logger.showAndLog(`task fail with error: ${err}`);
+    return err;
   });
+}
+
+function execTask(taskQueue) {
+  if (runningTasks < maxParallelTasks) {
+    const Tasks = taskQueue.splice(0, maxParallelTasks - runningTasks);
+
+    if (Tasks.length === 0 && !taskNextPlanSetted) { // 所有任务都已经运行完毕，则在固定延迟之后重新运行一遍
+      taskNextPlanSetted = true;
+      logger.showAndLog(`rerun tasks after ${delay}ms`);
+      setTimeout(() => {
+        let newToken = token || fs.readFileSync(tokenPath);
+        taskNextPlanSetted = false;
+        main(newToken);
+      }, delay);
+      return ;
+    }
+    for (const Task of Tasks) {
+      watcher(Task)
+      .then(isclose => {
+        console.log(isclose);
+        return typeof isclose === 'boolean' && isclose && execTask(taskQueue);
+      })
+      .catch(isclose => {
+        console.log(isclose);
+        return typeof isclose === 'boolean' && isclose && execTask(taskQueue);
+      });
+    }
+  }
 }
 
 function main(token) {
   let entries = parse(token);
-  tasks = [sign, treasure, liveVideo, new GuessCar({})];
-
-  for (const entry of entries) {
-    // taskQueue.push();
-    new Daoju({entry}).start();
-    // exec(sign.start, entry);
-    // exec(treasure.start, entry);
-    // exec(liveVideo.start, entry);
-    new GuessCar({entry}).start();
+  let taskQueue = [];
+  for (const Task of tasks) {
+    for (const entry of entries) {
+      taskQueue.push(new Task({
+        entry
+      }));
+    }
   }
+  // tasks = [sign, treasure, liveVideo, new GuessCar({})];
+  execTask(taskQueue);
 }
-    // 需要记录日志，包括当前寻宝次数，领取了那些奖励，一共寻了多少次包宝，在几星图
 if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
   const server = dgram.createSocket('udp4');
   let host = '0.0.0.0';
