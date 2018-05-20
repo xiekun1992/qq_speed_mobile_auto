@@ -54,7 +54,7 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
       if (el.length > 0){
         visible = true;
         for (let i = 0; i < el.length; i++) {
-          if (el[i].getBoundingClientRect().width == 0) {
+          if (el[i].getBoundingClientRect().width == 0 && el[i].getBoundingClientRect().height == 0) {
             visible = false;
             break;
           }
@@ -62,8 +62,8 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
       }
       return visible;
     }, (err, visible) => {
-      err && done(err);
-      visible && done(null, visible);
+      if (err) return done(err);
+      if (visible) return done(null, visible);
       setTimeout(waitUntilVisible, 500);
     }, selector);
   }
