@@ -4,7 +4,7 @@ const fs = require('fs');
 const { parse } = require('./config');
 const { analyze } = require('./src/analyzer');
 const {
-  sign,
+  Sign,
   treasure,
   liveVideo,
   GuessCar,
@@ -24,7 +24,7 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [GuessCar, Daoju];//[Daoju, GuessCar];
+let tasks = [GuessCar, Daoju, Sign];
 let runningTasks = 0;
 let maxParallelTasks = 2;
 let taskNextPlanSetted = false; // 保证下次任务运行的全局唯一性
