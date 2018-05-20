@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-const entries = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 
 function parse(token) {
   token = token || fs.readFileSync(__dirname + '/token.txt');
+  const entries = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 
   for (let entry of entries) {
     entry.account = Buffer.from(entry.account, 'base64').toString();
