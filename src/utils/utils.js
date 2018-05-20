@@ -70,10 +70,15 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
   waitUntilVisible();
 });
 // 获取html元素的src属性
-Nightmare.action('src', (selector, done) => {
+Nightmare.action('src', function (selector, done) {
   this.evaluate_now(selector => {
     return document.querySelector(selector).src;
   }, done, selector);
 });
+// Nightmare.action('hasClass', (selector, done) => {
+//   this.evaluate_now(selector => {
+
+//   }, done, selector);
+// });
 
 module.exports = {};
