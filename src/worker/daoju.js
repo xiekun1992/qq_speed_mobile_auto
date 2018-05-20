@@ -34,20 +34,15 @@ exports.Daoju = class Daoju {
     }
     luckDraw() {
         logger.showAndLog(`${this.name} >>> luck draw`);
-        return this.nm
-            .wait('#judou_wrapper_list') // 物品列表
-            .wait('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
+        return this.nm // 物品列表
+            .waitUntilVisible('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
             .click('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
-            .wait('#judou_wrapper_list>li:nth-last-child(2) > .tc1 > div.tc-cont.c > div > a')
+            .waitUntilVisible('#judou_wrapper_list>li:nth-last-child(2) > .tc1 > div.tc-cont.c > div > a')
             .click('#judou_wrapper_list>li:nth-last-child(2) > .tc1 > div.tc-cont.c > div > a')
             .wait(1000)
-            .wait(selector => {
-                return document.querySelector(selector) && !!document.querySelector(selector).getBoundingClientRect().width;
-            }, '#areaContentId_speed')
+            .waitUntilVisible('#areaContentId_speed')
             .select('#areaContentId_speed', '1')
-            .wait(selector => {
-                return document.querySelector(selector) && !!document.querySelector(selector).getBoundingClientRect().width;
-            }, '#roleContentId_speed')
+            .waitUntilVisible('#roleContentId_speed')
             .select('#roleContentId_speed', this.entry.account)
             .click('#confirmButtonId_speed')
             .number('#judou_num')
@@ -71,10 +66,8 @@ exports.Daoju = class Daoju {
         logger.showAndLog(`${this.name} >>> sign`);
         return this.nm
             // 等待签到按钮显示并签到
-            .wait(selector => {
-                return document.querySelector(selector) && !!document.querySelector(selector).getBoundingClientRect().width;
-            }, '#logined_index')
-            .wait('#btn_signin')
+            .waitUntilVisible('#logined_index')
+            .waitUntilVisible('#btn_signin')
             .click('#btn_signin')
             // 领取聚豆奖励
             .wait((selector, selector1) => {
@@ -96,20 +89,21 @@ exports.Daoju = class Daoju {
         return this.nm
             .cookies.clearAll()
             .goto(this.entry.daoju_url)
-            .wait('#switcher_plogin')
+            .waitUntilVisible('#switcher_plogin')
             .click('#switcher_plogin')
-            .wait(500)
-            .wait('#u')
+            .waitUntilVisible('#u')
             .type('#u', this.entry.account)
-            .wait('#p')
+            .waitUntilVisible('#p')
             .type('#p', this.entry.password)
-            .wait('#login_button')
+            .waitUntilVisible('#login_button')
             .click('#login_button')
             .wait(3000)
             .title()
             .then((title) => {
                 if (!title) {
-                    throw new Error('tencent captcha coming');
+                    return this.nm.url().then(url => {
+                        throw new Error(`tencent captcha coming, url: ${url}`);
+                    });
                 }
                 return this.sign();
             })
