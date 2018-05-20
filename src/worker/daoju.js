@@ -77,6 +77,7 @@ exports.Daoju = class Daoju {
             }, '#golingqu > a', '#signandget')
             .click('#golingqu > a')
             .click('#signandget')
+            .wait(10000) // 等待点击后数据刷新完毕
             .then(() => {
                 return this.checkSum();
             })
