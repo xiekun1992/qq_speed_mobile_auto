@@ -126,17 +126,22 @@ exports.GuessCar =  class GuessCar {
       .then(url => {
         logger.showAndLog(`${this.name} >>> image url: ${url}`);
         // return ;
+        if (typeof url !== 'string') {
+          logger.showAndLog(`${this.name} >>> url fail to evaluate`);
+          logger.showAndLog(`${this.name} >>> analyze car again`);
+          return this.analyzeCar();
+        }
         let imageId = parseInt(url.split('/').pop());
         let imageName = this.cars[imageId].split('');
         logger.showAndLog(`${this.name} >>> image name: ${imageName}`);
-        this.resolveName(imageName)
-        .then(() => {
-          return this.guessLoop();
-        }).catch(err => {
-          logger.showAndLog(`${this.name} >>> ${err}`);
-          logger.showAndLog(`${this.name} >>> analyze car again`);
-          return this.analyzeCar();
-        });
-      })
+        return this.resolveName(imageName)
+          .then(() => {
+            return this.guessLoop();
+          });
+      }).catch(err => {
+        logger.showAndLog(`${this.name} >>> ${err}`);
+        logger.showAndLog(`${this.name} >>> analyze car again`);
+        return this.analyzeCar();
+      });
   }
 }
