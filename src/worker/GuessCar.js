@@ -19,6 +19,7 @@ exports.GuessCar =  class GuessCar {
     }
   }
   start() {
+    logger.showAndLog(`${this.name} >>> start`);
     return this.nm
     .goto(this.entry.guess_car_url)
     .waitUntilVisible('#unlogin > a')
@@ -79,6 +80,7 @@ exports.GuessCar =  class GuessCar {
     })
   }
   resolveName(imageName) {
+    logger.showAndLog(`${this.name} >>> resolve name`);
     return this.nm
     .wait(2500)
     .evaluate((imageName) => {
@@ -94,6 +96,7 @@ exports.GuessCar =  class GuessCar {
     }, imageName)
   }
   guessLoop() {
+    logger.showAndLog(`${this.name} >>> guess loop`);
     if (this.times <= 0) {
       return this.nm
         .waitUntilVisible('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
@@ -116,6 +119,7 @@ exports.GuessCar =  class GuessCar {
     return this.analyzeCar();
   }
   analyzeCar() {
+    logger.showAndLog(`${this.name} >>> analyze car`);
     return this.nm
       .wait('#inputName')
       .wait(1000)
