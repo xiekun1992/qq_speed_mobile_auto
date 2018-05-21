@@ -67,17 +67,20 @@ exports.Daoju = class Daoju {
     sign() {
         logger.showAndLog(`${this.name} >>> sign`);
         return this.nm
-            // 等待签到按钮显示并签到
+            .wait(3000)
+            // // 等待签到按钮显示并签到
             .waitUntilVisible('#logined_index')
-            .waitUntilVisible('#btn_signin')
-            .click('#btn_signin')
+            .wait('#btn_signin.sign-btn')
+            // .waitUntilVisible('#btn_signin.sign-btn') // 进入false死循环了
+            // .wait(3000)
+            .click('#btn_signin.sign-btn')
             // 领取聚豆奖励
             .wait((selector, selector1) => {
                 return document.querySelector(selector) && !!document.querySelector(selector).getBoundingClientRect().width || document.querySelector(selector1) && !!document.querySelector(selector1).getBoundingClientRect().width;
             }, '#golingqu > a', '#signandget')
             .click('#golingqu > a')
             .click('#signandget')
-            .wait(10000) // 等待点击后数据刷新完毕
+            .wait(9000) // 等待点击后数据刷新完毕
             .then(() => {
                 return this.checkSum();
             })
