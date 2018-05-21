@@ -95,7 +95,7 @@ exports.GuessCar =  class GuessCar {
   }
   guessLoop() {
     if (this.times <= 0) {
-      this.nm
+      return this.nm
         .waitUntilVisible('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
         .click('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)') // 继续游戏的按钮
         .then(() => {
@@ -113,6 +113,9 @@ exports.GuessCar =  class GuessCar {
     }
     this.times--;
     logger.showAndLog(`${this.name} >>> ${this.times} times left`);
+    return this.analyzeCar();
+  }
+  analyzeCar() {
     return this.nm
       .wait('#inputName')
       .wait(1000)
@@ -129,6 +132,10 @@ exports.GuessCar =  class GuessCar {
         this.resolveName(imageName)
         .then(() => {
           return this.guessLoop();
+        }).catch(err => {
+          logger.showAndLog(`${this.name} >>> ${err}`);
+          logger.showAndLog(`${this.name} >>> analyze car again`);
+          return this.analyzeCar();
         });
       })
   }
