@@ -34,17 +34,17 @@ function huntTreasure(nm) {
     .wait('#application > div.tabs > ul')
     .clickLast('#application > div.tabs > ul > li:not(.suo)')
     // 进入寻宝
-    .wait('#maps_2 > li div.tit-flog')
+    .wait('#application > div.tabs > div.tabs-bd > div.ditu-warp>ul:not(.hideClassName) > li div.tit-flog')
     .wait(1000)
-    .click('#maps_2 > li div.tit-flog')
+    .click('#application > div.tabs > div.tabs-bd > div.ditu-warp>ul:not(.hideClassName) > li div.tit-flog') // 选择今日大吉的地图
     .wait('#application > div.tabs > div.tabs-bd > div.btn-warp > div.anniu > a:nth-child(1)')
     .wait(1000)
-    .click('#application > div.tabs > div.tabs-bd > div.btn-warp > div.anniu > a:nth-child(1)')
+    .click('#application > div.tabs > div.tabs-bd > div.btn-warp > div.anniu > a:nth-child(1)') // 选择普通寻宝
     .wait('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
     .wait(1000)
     .screenshot(`./screen_shots/${new Date().format()}.png`) // 记录奖励
     .wait(1000)
-    .click('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
+    .click('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow') // 开始寻宝
     // 等待寻宝完成
     .wait(1.01 * 10 * 60 * 1000)
     // 领取奖励
