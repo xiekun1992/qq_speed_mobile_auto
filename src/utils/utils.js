@@ -47,6 +47,7 @@ Nightmare.action('touch', function (selector, done) {
 });
 // 等到指定元素出现后或等待超时后再往下走
 Nightmare.action('waitUntilVisible', function (selector, done) {
+  let times = 18, leftTimes = times;
   const waitUntilVisible = () => {
     this.evaluate_now(selector => {
       const el = document.querySelectorAll(selector);
@@ -64,6 +65,10 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
     }, (err, visible) => {
       if (err) return done(err);
       if (visible) return done(null, visible);
+      if (leftTimes <= 0) {
+        return done(new Error(`waitUntilVisible timeout for ${times} trials`));
+      }
+      leftTimes--;
       setTimeout(waitUntilVisible, 500);
     }, selector);
   }

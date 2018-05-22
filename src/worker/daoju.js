@@ -67,11 +67,11 @@ exports.Daoju = class Daoju {
     sign() {
         logger.showAndLog(`${this.name} >>> sign`);
         return this.nm
-            .wait(3000)
+            // .wait(3000)
             // // 等待签到按钮显示并签到
             .waitUntilVisible('#logined_index')
-            .wait('#btn_signin.sign-btn')
-            // .waitUntilVisible('#btn_signin.sign-btn') // 进入false死循环了
+            // .wait('#btn_signin.sign-btn')
+            .waitUntilVisible('#btn_signin.sign-btn')
             // .wait(3000)
             .click('#btn_signin.sign-btn')
             // 领取聚豆奖励
