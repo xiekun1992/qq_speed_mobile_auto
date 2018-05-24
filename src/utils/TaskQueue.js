@@ -15,6 +15,7 @@ exports.TaskQueue = class TaskQueue {
     }
     addTasks() { // 从这轮任务中获取任务
         return new Promise((resolve, reject) => {
+            console.log(this)
             if (this.runningTasks.length < this.maxParallelTasks) {
                 this.runningTasks = this.runningTasks.concat(this.roundTasks.splice(0, this.maxParallelTasks - this.runningTasks.length));
             }
@@ -27,18 +28,18 @@ exports.TaskQueue = class TaskQueue {
     }
     execTasks() { // 开始执行当前需要执行的任务
         this.runningTasks.forEach((Task) => {
-            new Task().start()
+            Task.start()
             .then(res => {
                 logger.showAndLog(`${this.name} >>> task finished successfully: ${res}`);
                 if (typeof res === 'boolean' && res === true) {
                     this.removeTask(Task);
-                    this.addTasksPromise = this.addTasksPromise.then(this.addTasks);
+                    this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
                 }
             }).catch(err => {
                 logger.showAndLog(`${this.name} >>> task fail with error: ${err}`);
                 if (typeof res === 'boolean' && res === true) {
                     this.removeTask(Task);
-                    this.addTasksPromise = this.addTasksPromise.then(this.addTasks);
+                    this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
                 }
             });
         });
