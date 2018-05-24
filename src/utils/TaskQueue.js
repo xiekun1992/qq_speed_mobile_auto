@@ -15,7 +15,6 @@ exports.TaskQueue = class TaskQueue {
     }
     addTasks() { // 从这轮任务中获取任务
         return new Promise((resolve, reject) => {
-            console.log(this)
             if (this.runningTasks.length < this.maxParallelTasks) {
                 this.runningTasks = this.runningTasks.concat(this.roundTasks.splice(0, this.maxParallelTasks - this.runningTasks.length));
             }
@@ -46,6 +45,7 @@ exports.TaskQueue = class TaskQueue {
     }
     scheduleTask() { // 没有需要执行的任务时，自动计划下一轮任务的时间
         if (this.roundTasks.length === 0) {
+            logger.showAndLog(`${this.name} >>> now the next turn will continue after ${this.delay}s`);
             const timer = setTimeout(() => {
                 this.run();
                 clearTimeout(timer);
