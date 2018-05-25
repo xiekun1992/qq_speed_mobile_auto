@@ -1,12 +1,12 @@
 const { Treasure } = require('./Treasure');
-const liveVideo = require('./live_video');
+const { LiveVideo } = require('./LiveVideo');
 const { Sign } = require('./Sign');
 const { GuessCar } = require('./GuessCar');
 const { Daoju } = require('./Daoju');
 
 module.exports = {
     Treasure,
-    liveVideo,
+    LiveVideo,
     Sign,
     GuessCar,
     Daoju

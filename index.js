@@ -6,7 +6,7 @@ const { analyze } = require('./src/analyzer');
 const {
   Sign,
   Treasure,
-  liveVideo,
+  LiveVideo,
   GuessCar,
   Daoju
 } = require('./src/worker');
@@ -25,7 +25,7 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [Treasure, GuessCar, Daoju, Sign];
+let tasks = [LiveVideo, Treasure, GuessCar, Daoju, Sign];
 // let tasks = [Daoju];
 // let runningTasks = 0;
 // let maxParallelTasks = 2;
