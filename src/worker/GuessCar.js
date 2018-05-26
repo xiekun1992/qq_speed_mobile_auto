@@ -54,6 +54,7 @@ exports.GuessCar =  class GuessCar {
         .then(res => {
           if (res > 0) {
             return this.nm
+              .waitUntilVisible('body > div.wrap > div > div > a')
               .click('body > div.wrap > div > div > a')
               .then(() => {
                 return this.guessLoop();
