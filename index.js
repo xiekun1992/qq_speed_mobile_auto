@@ -25,7 +25,7 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [LiveVideo, Treasure, GuessCar, Daoju, Sign];
+let tasks = [GuessCar, Daoju, Sign, LiveVideo, Treasure];
 // let tasks = [Daoju];
 // let runningTasks = 0;
 // let maxParallelTasks = 2;
