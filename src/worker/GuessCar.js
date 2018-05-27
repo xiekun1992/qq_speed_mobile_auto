@@ -11,7 +11,7 @@ exports.GuessCar =  class GuessCar {
     this.entry = entry;
     this.times = 5;
     this.cars = {};
-    this.name = this.constructor.name;
+    this.name = `${this.constructor.name} - ${this.entry.account}`;
 
     let carList = JSON.parse(fs.readFileSync(__dirname + '/cars.json'));
     for (let car in carList) {
@@ -21,6 +21,7 @@ exports.GuessCar =  class GuessCar {
   start() {
     logger.showAndLog(`${this.name} >>> start`);
     return this.nm
+    .viewport(400, 800)
     .goto(this.entry.guess_car_url)
     .waitUntilVisible('#unlogin > a')
     .click('#unlogin > a')

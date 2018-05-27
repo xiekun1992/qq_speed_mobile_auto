@@ -8,7 +8,7 @@ exports.Daoju = class Daoju {
             waitTimeout: 10000
         });
         this.entry = entry;
-        this.name = this.constructor.name;
+        this.name = `${this.constructor.name} - ${this.entry.account}`;
         this.max = 150;
         this.min = 2;
     }
@@ -91,6 +91,7 @@ exports.Daoju = class Daoju {
             });
     }
     start() {
+        console.log(this.entry.account);
         logger.showAndLog(`${this.name} >>> start`);
         return this.nm
             .cookies.clearAll()

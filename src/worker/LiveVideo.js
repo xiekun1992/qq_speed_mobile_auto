@@ -10,7 +10,7 @@ exports.LiveVideo = class LiveVideo {
       waitTimeout
     });
     this.entry = entry;
-    this.name = this.constructor.name;
+    this.name = `${this.constructor.name} - ${this.entry.account}`;
   }  
   login() {
     logger.showAndLog(`${this.name} >>> login`);

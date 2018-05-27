@@ -9,7 +9,7 @@ exports.Treasure = class Treasure {
       waitTimeout: 1000 * 60 * 20
     });
     this.entry = entry;
-    this.name = this.constructor.name;
+    this.name = `${this.constructor.name} - ${this.entry.account}`;
   }
   checkLeftTimes() {
     logger.showAndLog(`${this.name} >>> check left times`);
@@ -72,6 +72,7 @@ exports.Treasure = class Treasure {
   start() {
     logger.showAndLog(`${this.name} >>> start`);
     return this.nm
+      .viewport(400, 800)
       .goto(this.entry.treasure_url)
       .wait('#u') // account
       .type('#u', this.entry.account)
