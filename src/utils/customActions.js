@@ -1,12 +1,16 @@
 const Nightmare = require('nightmare');
 
+
 // 提取文本中出现的第一组数字
 Nightmare.action('number', function (selector, done) {
   this.evaluate_now((selector) => {
-    let text = document.querySelector(selector).innerText;
-    let res = /(\-?\d*\.?\d+)/.exec(text);
-    if (res && res.length > 0) {
-      return +res[0];
+    let el = document.querySelector(selector);
+    if (el) {
+        let text = el.innerText;
+        let res = /(\-?\d*\.?\d+)/.exec(text);
+        if (res && res.length > 0) {
+          return +res[0];
+        }
     }
     return NaN;
   }, done, selector);
