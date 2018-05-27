@@ -8,11 +8,13 @@ const {
   Treasure,
   LiveVideo,
   GuessCar,
-  Daoju
+  Daoju,
+  FunWeekly
 } = require('./src/worker');
 const logger = require('./src/utils/logger');
 const { TaskQueue } = require('./src/utils/TaskQueue');
 require('./src/utils/utils');
+require('./src/utils/customActions');
 
 // 设置程序的根路径
 // 设置nightmare的electron窗口是否显示
@@ -25,65 +27,11 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [GuessCar, Daoju, Sign, LiveVideo, Treasure];
-// let tasks = [Daoju];
-// let runningTasks = 0;
-// let maxParallelTasks = 2;
-// let taskNextPlanSetted = false; // 保证下次任务运行的全局唯一性
+// let tasks = [GuessCar, Daoju, Sign, LiveVideo, Treasure];
+// let tasks = [GuessCar, Daoju, Sign, FunWeekly];
+let tasks = [Treasure];
 
 logger.setPath(logPath);
-
-// function watcher(taskInstance) {
-//   return taskInstance.start().then((res) => {
-//     logger.showAndLog(`task finished successfully: ${res}`);
-//     return res;
-//   }).catch((err) => {
-//     logger.showAndLog(`task fail with error: ${err}`);
-//     return err;
-//   });
-// }
-// let currentTasks, taskTimer;
-// function execTask(taskQueue) {
-//   return new Promise((resolve, reject) => {
-//     if (runningTasks < maxParallelTasks) {
-//       const Tasks = taskQueue.splice(0, maxParallelTasks - runningTasks);
-//       runningTasks += Tasks.length;
-  
-//       if (Tasks.length === 0 && !taskNextPlanSetted) { // 所有任务都已经运行完毕，则在固定延迟之后重新运行一遍
-//         clearTimeout(taskTimer);
-//         taskNextPlanSetted = true;
-//         logger.showAndLog(`rerun tasks after ${delay}ms`);
-//         taskTimer = setTimeout(() => {
-//           let newToken = token || fs.readFileSync(tokenPath);
-//           taskNextPlanSetted = false;
-//           main(newToken);
-//         }, delay);
-//         return ;
-//       }
-//       for (const Task of Tasks) {
-//         watcher(Task)
-//         .then(isclose => {
-//           runningTasks--;
-//           logger.showAndLog(`running tasks: ${runningTasks}`);
-//           if (typeof isclose === 'boolean' && isclose) {
-//             resolve(taskQueue);
-//             currentTasks = currentTasks.then(execTask);
-//           }
-//           // return typeof isclose === 'boolean' && isclose && execTask(taskQueue);
-//         })
-//         .catch(isclose => {
-//           runningTasks--;
-//           logger.showAndLog(`running tasks: ${runningTasks}`);
-//           if (typeof isclose === 'boolean' && isclose) {
-//             resolve(taskQueue);
-//             currentTasks = currentTasks.then(execTask);
-//           }
-//           // return typeof isclose === 'boolean' && isclose && execTask(taskQueue);
-//         });
-//       }
-//     }
-//   });
-// }
 
 function main(token) {
   let entries = parse(token);
@@ -99,8 +47,6 @@ function main(token) {
   new TaskQueue({
     tasks: taskQueue
   }).run();
-  // tasks = [sign, treasure, liveVideo, new GuessCar({})];
-  // currentTasks = execTask(taskQueue);
 }
 if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
   const server = dgram.createSocket('udp4');
