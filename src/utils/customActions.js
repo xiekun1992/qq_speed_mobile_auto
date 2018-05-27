@@ -11,6 +11,8 @@ Nightmare.action('number', function (selector, done) {
         if (res && res.length > 0) {
           return +res[0];
         }
+    } else {
+        throw new Error(`.number() Unable to find element by selector: ${selector}`);
     }
     return NaN;
   }, done, selector);
@@ -31,7 +33,7 @@ Nightmare.action('clickLast', function (selector, done) {
       });
       element.dispatchEvent(event);
     } else {
-      throw new Error('Unable to find element by selector: ' + selector);
+      throw new Error(`.checkList() Unable to find element by selector: ${selector}`);
     }
   }, done, selector);
 });
@@ -39,8 +41,12 @@ Nightmare.action('clickLast', function (selector, done) {
 Nightmare.action('touch', function (selector, done) {
   this.evaluate_now((selector) => {
     const el = document.querySelector(selector);
-    let event = new TouchEvent('touchstart');
-    el.dispatchEvent(event);
+    if (el) {
+        let event = new TouchEvent('touchstart');
+        el.dispatchEvent(event);
+    } else {
+        throw new Error(`.touch() Unable to find element by selector: ${selector}`);
+    }
   }, done, selector);
 });
 // 等到指定元素出现后或等待超时后再往下走
@@ -64,7 +70,7 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
       if (err) return done(err);
       if (visible) return done(null, visible);
       if (leftTimes <= 0) {
-        return done(new Error(`waitUntilVisible timeout for ${times} trials`));
+        return done(new Error(`.waitUntilVisible() timeout for ${times} trials`));
       }
       leftTimes--;
       setTimeout(waitUntilVisible, 500);
@@ -75,11 +81,19 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
 // 获取html元素的src属性
 Nightmare.action('src', function (selector, done) {
   this.evaluate_now(selector => {
-    return document.querySelector(selector).src;
+      let el = document.querySelector(selector);
+      if (!el) {
+        throw new Error(`.src() Unable to find element by selector: ${selector}`);
+      }
+      return el.src;
   }, done, selector);
 });
-// Nightmare.action('hasClass', (selector, done) => {
-//   this.evaluate_now(selector => {
-
-//   }, done, selector);
-// });
+Nightmare.action('hasClass', function (selector, className, done) {
+  this.evaluate_now((selector, className) => {
+    let el = document.querySelector(selector);
+    if (!el) {
+        throw new Error(`.hasClass() Unable to find element by selector: ${selector}`);
+    }
+    return el.classList.contains(className);
+  }, done, selector, className);
+});

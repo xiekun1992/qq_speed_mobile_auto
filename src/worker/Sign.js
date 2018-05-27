@@ -9,16 +9,26 @@ exports.Sign = class Sign {
     });
     this.entry = entry;
     this.name = this.constructor.name;
+    this.retryLimit = 20;
+    this.retriedTimes = 0;
+  }
+  retry(action) {
+    if (this.retriedTimes < this.retryLimit) {
+      this.retriedTimes++;
+      action.call(this);
+    } else {
+      this.nm.end().then(() => {
+        logger.showAndLog(`${this.name} >>> retry ${this.retryLimit} times, ${action.name}() still error`);
+        return true;
+      });
+    }
   }
   start() {
     return this.nm
       .cookies.clearAll()
       .goto(this.entry.sign_url)
       .waitUntilVisible('#signButton')
-      .evaluate(selector => {
-        const btnEl = document.querySelectorAll(selector)[0];
-        return btnEl.classList.contains('btn_sign');
-      }, '#signButton')
+      .hasClass('#signButton', 'btn_sign')
       .then(canSign => {
         if (canSign) {
           logger.showAndLog(`${this.name} >>> can sign`);
@@ -33,7 +43,8 @@ exports.Sign = class Sign {
             }).catch(err => {
               logger.showAndLog(`${this.name} >>> ${err}`);
               logger.showAndLog(`${this.name} >>> sign day error, retry`);
-              this.start();
+              // this.start();
+              this.retry(this.start);
             })
         } else {
           return this.signWeek();
@@ -41,7 +52,8 @@ exports.Sign = class Sign {
       }).catch(err => {
         logger.showAndLog(`${this.name} >>> ${err}`);
         logger.showAndLog(`${this.name} >>> sign day error, retry`);
-        this.start();
+        // this.start();
+        this.retry(this.start);
       })
   }
   signWeek() {
