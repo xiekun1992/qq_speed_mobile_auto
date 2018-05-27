@@ -8,16 +8,16 @@ exports.Sign = class Sign {
         waitTimeout: 10000
     });
     this.entry = entry;
-    this.name = this.constructor.name;
+    this.name = `${this.constructor.name} - ${this.entry.account}`;
     this.retryLimit = 20;
     this.retriedTimes = 0;
   }
   retry(action) {
     if (this.retriedTimes < this.retryLimit) {
       this.retriedTimes++;
-      action.call(this);
+      return action.call(this);
     } else {
-      this.nm.end().then(() => {
+      return this.nm.end().then(() => {
         logger.showAndLog(`${this.name} >>> retry ${this.retryLimit} times, ${action.name}() still error`);
         return true;
       });
@@ -33,28 +33,56 @@ exports.Sign = class Sign {
         if (canSign) {
           logger.showAndLog(`${this.name} >>> can sign`);
           return this.nm
-            .click('#signButton')
-            .waitUntilVisible('body > div.bang-dialog-dialog')
+            .click('#signButton') // 每日签到
+            .waitUntilVisible('body > div.bang-dialog-dialog') // 签到弹框
             .waitUntilVisible('body > div.bang-dialog-dialog > div.bang-dialog-dialog-bt > a')
-            .click('body > div.bang-dialog-dialog > div.bang-dialog-dialog-bt > a')
-            .wait(1000)
+            .click('body > div.bang-dialog-dialog > div.bang-dialog-dialog-bt > a') // 隐藏签到弹框
+            // .wait(1000)
             .then(() => {
-              return this.signWeek();
+              return this.signMonth().then(this.signWeek.bind(this));
             }).catch(err => {
               logger.showAndLog(`${this.name} >>> ${err}`);
               logger.showAndLog(`${this.name} >>> sign day error, retry`);
               // this.start();
-              this.retry(this.start);
+              return this.retry(this.start);
             })
         } else {
-          return this.signWeek();
+          return this.signMonth().then(this.signWeek.bind(this));
+          // return this.signWeek();
         }
       }).catch(err => {
         logger.showAndLog(`${this.name} >>> ${err}`);
         logger.showAndLog(`${this.name} >>> sign day error, retry`);
         // this.start();
-        this.retry(this.start);
+        return this.retry(this.start);
       })
+  }
+  signMonth() { // 一次性领取每月积累的奖励
+    logger.showAndLog(`${this.name} >>> signMonth`);
+    let date = new Date();
+    if (date.getDate() > 25) { // 25号之后每天判断领取奖励
+      return this.nm
+        .evaluate(async selector => {
+          function clickEl(el) {
+            return new Promise((resolve, reject) => {
+              function checkResult() {
+                if (!el.classList.contains('receive')) {
+                  resolve('done');
+                } else {
+                  setTimeout(checkResult, 500);
+                }
+              }
+              el.click();
+              checkResult();
+            });
+          }
+          let els = document.querySelectorAll(selector);
+          for (let el of els) {
+            await clickEl(el);
+          }
+        }, 'div.prize a.receive')
+    }
+    return Promise.resolve('not now');
   }
   signWeek() {
     return this.nm
