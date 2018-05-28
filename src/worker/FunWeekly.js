@@ -56,7 +56,7 @@ exports.FunWeekly = class FunWeekly {
     start() {
         logger.info(`start`);
         if (!this.isWeekDay()) {
-            return Promise.resolve(false);
+            return Promise.resolve(true);
         }
         return this.nm
             .viewport(400, 800)
