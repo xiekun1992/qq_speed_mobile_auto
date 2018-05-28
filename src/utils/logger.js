@@ -18,25 +18,23 @@ class Logger {
     setTemplate(...args) {
         this.template = args.join(' - ');
     }
-    log(content) {
-        // 日志过大时需要创建新文件
-        fs.appendFileSync(`${logPath}/log.log`, content);
-    }
     showAndLog(type, content) {
         content = `${new Date().format()} - ${type} ${this.template} ${template} ${content}\n`;
         console.log(content);
-        log(content);
+        // 日志过大时需要创建新文件
+        fs.appendFileSync(`${logPath}/log.log`, content);
     }
     error(content) {
-        this.showAndLog('Error', JSON.stringify(content));
+        this.showAndLog('Error', typeof content !== 'string'? JSON.stringify(content): content);
     }
     info(content) {
-        this.showAndLog('Info', JSON.stringify(content));
+        this.showAndLog('Info', typeof content !== 'string'? JSON.stringify(content): content);
     }
 }
 
 
 module.exports = {
     getInstance,
+    setTemplate,
     setPath
 }
