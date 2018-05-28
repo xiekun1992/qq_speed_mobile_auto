@@ -27,14 +27,15 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-// let tasks = [GuessCar, Daoju, Sign, LiveVideo, Treasure];
+let tasks = [GuessCar, Daoju, Sign, FunWeekly, LiveVideo, Treasure];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
-let tasks = [Treasure];
+// let tasks = [Treasure];
 
 logger.setPath(logPath);
+logger.setTemplate('', '>>>');
 
 function main(token) {
-  let entries = parse(token);
+  let entries = parse(token).slice(1);
   let taskQueue = [];
   // console.log(tasks)
   for (const Task of tasks) {
@@ -56,7 +57,7 @@ if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
   let port = aport;
 
   server.on('message', (message, remote) => {
-    logger.showAndLog(`receive message from: ${remote.address}:${remote.port} - ${message}`);
+    logger.info(`receive message from: ${remote.address}:${remote.port} - ${message}`);
 
     message = message.toString();
     switch(message.charAt(0)){
@@ -74,12 +75,12 @@ if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
         // 分析器停止发送信息
         clearInterval(timer);
         // 10秒后关闭
-        logger.showAndLog('ready to terminate analyzer process in 10s');
+        logger.info('ready to terminate analyzer process in 10s');
         let time = 10;
         setTimeout(() => {
-          logger.showAndLog(`${time}s left`);
+          logger.info(`${time}s left`);
           if (time-- > 0) {
-            logger.showAndLog('analyzer process has been terminated');
+            logger.info('analyzer process has been terminated');
             server.close();
             process.exit(0);
           }
@@ -94,7 +95,7 @@ if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
       timer = setInterval(() => {
         const msg = Buffer.from(`1:${token}`);
         server.send(msg, 0, msg.length, wport, multicastAddr);
-        logger.showAndLog(`send ${msg} to the wire...`);
+        logger.info(`send ${msg} to the wire...`);
       }, 2000);
     });
   } else {

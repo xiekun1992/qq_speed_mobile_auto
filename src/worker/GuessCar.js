@@ -1,6 +1,6 @@
 const Nightmare = require('nightmare');
 const fs = require('fs');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger').getInstance();
 
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show, entry}) {
@@ -11,7 +11,7 @@ exports.GuessCar =  class GuessCar {
     this.entry = entry;
     this.times = 5;
     this.cars = {};
-    this.name = `${this.constructor.name} - ${this.entry.account}`;
+    logger.setTemplate(this.constructor.name, this.entry.account);
 
     let carList = JSON.parse(fs.readFileSync(__dirname + '/cars.json'));
     for (let car in carList) {
@@ -19,7 +19,7 @@ exports.GuessCar =  class GuessCar {
     }
   }
   start() {
-    logger.showAndLog(`${this.name} >>> start`);
+    logger.info(`start`);
     return this.nm
     .viewport(400, 800)
     .goto(this.entry.guess_car_url)
@@ -30,7 +30,7 @@ exports.GuessCar =  class GuessCar {
     .wait(2000)
     .src('#loginFrame')
     .then((url) => {
-      logger.showAndLog(`${this.name} >>> get login frame src: ${url}`);
+      logger.info(`get login frame src: ${url}`);
       return this.nm
         .goto(url)
         .waitUntilVisible('#u') // account
@@ -61,20 +61,20 @@ exports.GuessCar =  class GuessCar {
                 return this.guessLoop();
               }) // 开始游戏
           } else {
-            logger.showAndLog(`${this.name} >>> times used up`);
+            logger.info(`times used up`);
             return this.nm
                 .end()
                 .then(() => {
-                  logger.showAndLog(`${this.name} >>> app close`);
+                  logger.info(`app close`);
                   return true;
                 });
           }
         }).catch(err => {
-          logger.showAndLog(`${this.name} >>> ${err}`);
+          logger.error(`${err}`);
           return this.nm
             .end()
             .then(() => {
-              logger.showAndLog(`${this.name} >>> app close`);
+              logger.info(`app close`);
               return true;
             });
         });
@@ -82,7 +82,7 @@ exports.GuessCar =  class GuessCar {
     })
   }
   resolveName(imageName) {
-    logger.showAndLog(`${this.name} >>> resolve name`);
+    logger.info(`resolve name`);
     return this.nm
     .wait(2500)
     .evaluate((imageName) => {
@@ -98,7 +98,7 @@ exports.GuessCar =  class GuessCar {
     }, imageName)
   }
   guessLoop() {
-    logger.showAndLog(`${this.name} >>> guess loop`);
+    logger.info(`guess loop`);
     if (this.times <= 0) {
       return this.nm
         .waitUntilVisible('body > div.pop_mask.pop_tips1 > div > div > div > a:nth-child(2)')
@@ -108,7 +108,7 @@ exports.GuessCar =  class GuessCar {
           return this.guessLoop();
         }).catch(err => {
           // 不能继续猜车后等待超时退出
-          logger.showAndLog(`${this.name} >>> app close with times used up`);
+          logger.info(`app close with times used up`);
           return this.nm
             .end()
             .then(() => {
@@ -117,11 +117,11 @@ exports.GuessCar =  class GuessCar {
         })
     }
     this.times--;
-    logger.showAndLog(`${this.name} >>> ${this.times} times left`);
+    logger.info(`${this.times} times left`);
     return this.analyzeCar();
   }
   analyzeCar() {
-    logger.showAndLog(`${this.name} >>> analyze car`);
+    logger.info(`analyze car`);
     return this.nm
       .wait('#inputName')
       .wait(1000)
@@ -130,23 +130,23 @@ exports.GuessCar =  class GuessCar {
         return document.querySelector(`#list_car>li:nth-child(${Math.ceil(Math.abs(rect / 360)) + 1})>img`).src;
       }, '#list_car')
       .then(url => {
-        logger.showAndLog(`${this.name} >>> image url: ${url}`);
+        logger.info(`image url: ${url}`);
         // return ;
         if (typeof url !== 'string') {
-          logger.showAndLog(`${this.name} >>> url fail to evaluate`);
-          logger.showAndLog(`${this.name} >>> analyze car again`);
+          logger.info(`url fail to evaluate`);
+          logger.info(`analyze car again`);
           return this.analyzeCar();
         }
         let imageId = parseInt(url.split('/').pop());
         let imageName = this.cars[imageId].split('');
-        logger.showAndLog(`${this.name} >>> image name: ${imageName}`);
+        logger.info(`image name: ${imageName}`);
         return this.resolveName(imageName)
           .then(() => {
             return this.guessLoop();
           });
       }).catch(err => {
-        logger.showAndLog(`${this.name} >>> ${err}`);
-        logger.showAndLog(`${this.name} >>> analyze car again`);
+        logger.error(`${err}`);
+        logger.error(`analyze car again`);
         return this.analyzeCar();
       });
   }

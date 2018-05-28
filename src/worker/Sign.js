@@ -1,5 +1,5 @@
 const Nightmare = require('nightmare');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger').getInstance();
 
 exports.Sign = class Sign {
   constructor({show = process.env.show, entry}) {
@@ -8,7 +8,7 @@ exports.Sign = class Sign {
         waitTimeout: 10000
     });
     this.entry = entry;
-    this.name = `${this.constructor.name} - ${this.entry.account}`;
+    logger.setTemplate(this.constructor.name, this.entry.account);
     this.retryLimit = 20;
     this.retriedTimes = 0;
   }
@@ -18,7 +18,7 @@ exports.Sign = class Sign {
       return action.call(this);
     } else {
       return this.nm.end().then(() => {
-        logger.showAndLog(`${this.name} >>> retry ${this.retryLimit} times, ${action.name}() still error`);
+        logger.info(`retry ${this.retryLimit} times, ${action.name}() still error`);
         return true;
       });
     }
@@ -32,7 +32,7 @@ exports.Sign = class Sign {
       .hasClass('#signButton', 'btn_sign')
       .then(canSign => {
         if (canSign) {
-          logger.showAndLog(`${this.name} >>> can sign`);
+          logger.info(`can sign`);
           return this.nm
             .click('#signButton') // 每日签到
             .waitUntilVisible('body > div.bang-dialog-dialog') // 签到弹框
@@ -42,8 +42,8 @@ exports.Sign = class Sign {
             .then(() => {
               return this.signMonth().then(this.signWeek.bind(this));
             }).catch(err => {
-              logger.showAndLog(`${this.name} >>> ${err}`);
-              logger.showAndLog(`${this.name} >>> sign day error, retry`);
+              logger.error(`${err}`);
+              logger.error(`sign day error, retry`);
               // this.start();
               return this.retry(this.start);
             })
@@ -52,14 +52,14 @@ exports.Sign = class Sign {
           // return this.signWeek();
         }
       }).catch(err => {
-        logger.showAndLog(`${this.name} >>> ${err}`);
-        logger.showAndLog(`${this.name} >>> sign day error, retry`);
+        logger.error(`${err}`);
+        logger.error(`sign day error, retry`);
         // this.start();
         return this.retry(this.start);
       })
   }
   signMonth() { // 一次性领取每月积累的奖励
-    logger.showAndLog(`${this.name} >>> signMonth`);
+    logger.info(`signMonth`);
     let date = new Date();
     if (date.getDate() > 25) { // 25号之后每天判断领取奖励
       return this.nm
@@ -106,14 +106,7 @@ exports.Sign = class Sign {
                   .wait(1000)
                   .end()
                   .then(() => {
-                    logger.showAndLog(`${this.name} >>> sign success, app close`);
-                    return this.nm
-                      .end()
-                      .then(() => {
-                        return true;
-                      })
-                  }).catch(err => {
-                    logger.showAndLog(`${this.name} >>> ${err}`);
+                    logger.info(`${err}`);
                     this.nm.refresh();
                     return this.signWeek();
                   });
@@ -122,7 +115,7 @@ exports.Sign = class Sign {
                 return this.signWeek();
               }
             }).catch(err => {
-              logger.showAndLog(`${this.name} >>> ${err}`);
+              logger.error(`${err}`);
               this.nm.refresh();
               return this.signWeek();
             });
@@ -131,12 +124,12 @@ exports.Sign = class Sign {
           return this.nm
             .end()
             .then(() => {
-              logger.showAndLog(`${this.name} >>> already signed, app close`);
+              logger.info(`already signed, app close`);
               return true;
             })
         }
       }).catch(err => {
-        logger.showAndLog(`${this.name} >>> ${err}`);
+        logger.error(`${err}`);
         this.nm.refresh();
         return this.signWeek();
       });
