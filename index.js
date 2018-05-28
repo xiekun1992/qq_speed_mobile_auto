@@ -35,7 +35,7 @@ logger.setPath(logPath);
 logger.setTemplate('', '>>>');
 
 function main(token) {
-  let entries = parse(token).slice(1);
+  let entries = parse(token);
   let taskQueue = [];
   // console.log(tasks)
   for (const Task of tasks) {
