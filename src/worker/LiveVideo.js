@@ -111,6 +111,7 @@ exports.LiveVideo = class LiveVideo {
       });
   }
   start() {
+    this.logger.info(`start`);
     this.nm.options.waitTimeout = waitTimeout;
     return this.nm
       .goto(this.entry.video_url)
