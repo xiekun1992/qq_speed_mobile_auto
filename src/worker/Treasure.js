@@ -30,6 +30,7 @@ exports.Treasure = class Treasure {
       .wait(3000)
       .number('#leftTimes')
       .then(times => {
+        logger.showAndLog(`${this.name} >>> times left: ${times}`);
         if (times > 0) {
           return this.huntTreasure();
         } else {
@@ -83,6 +84,7 @@ exports.Treasure = class Treasure {
       .wait('#application > div.tabs > ul')
       .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
       .then(res => {
+        logger.showAndLog(`${this.name} >>> is treasure hunting? ${res}`);
         if (res) {
           return this.checkLeftTimes();
         } else {
