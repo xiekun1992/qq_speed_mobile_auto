@@ -106,7 +106,14 @@ exports.Sign = class Sign {
                   .wait(1000)
                   .end()
                   .then(() => {
-                    logger.info(`${err}`);
+                    logger.info(`sign success, app close`);
+                    return this.nm
+                      .end()
+                      .then(() => {
+                        return true;
+                      })
+                  }).catch(err => {
+                    logger.info(err);
                     this.nm.refresh();
                     return this.signWeek();
                   });
@@ -115,7 +122,7 @@ exports.Sign = class Sign {
                 return this.signWeek();
               }
             }).catch(err => {
-              logger.error(`${err}`);
+              logger.error(err);
               this.nm.refresh();
               return this.signWeek();
             });
@@ -129,7 +136,7 @@ exports.Sign = class Sign {
             })
         }
       }).catch(err => {
-        logger.error(`${err}`);
+        logger.error(err);
         this.nm.refresh();
         return this.signWeek();
       });
