@@ -1,5 +1,5 @@
 const Nightmare = require('nightmare');
-const logger = require('../utils/logger').getInstance();
+const logFactory = require('../utils/logger');
 const waitTimeout = 1 * 60 * 1000;
 
 exports.LiveVideo = class LiveVideo {
@@ -10,10 +10,11 @@ exports.LiveVideo = class LiveVideo {
       waitTimeout
     });
     this.entry = entry;
-    logger.setTemplate(this.constructor.name, this.entry.account);
+    this.logger = logFactory.getInstance();
+    this.logger.setTemplate(this.constructor.name, this.entry.account);
   }  
   login() {
-    logger.info(`login`);
+    this.logger.info(`login`);
     return this.nm
       .wait('#dvGift > div > div > div.gin_gift_box > div.gin_hd > div.gin_extra > span > a')
       .click('#dvGift > div > div > div.gin_gift_box > div.gin_hd > div.gin_extra > span > a')
@@ -31,7 +32,7 @@ exports.LiveVideo = class LiveVideo {
       });
   }
   checksum() {
-    logger.info(`checksum`);
+    this.logger.info(`checksum`);
     this.nm.options.waitTimeout = waitTimeout;
     return this.nm
       .wait('#Dvinputmsg > div.extra > div')
@@ -40,10 +41,10 @@ exports.LiveVideo = class LiveVideo {
       .wait('#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.update_count')
       .number('#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
       .then(sum => {
-        logger.info(`flowers: ${sum}`);
+        this.logger.info(`flowers: ${sum}`);
         if (sum > 2) {
           return this.nm.end().then(() => {
-            logger.info(`app should close`);
+            this.logger.info(`app should close`);
             return true;
           });
         } else {
@@ -53,7 +54,7 @@ exports.LiveVideo = class LiveVideo {
             return leftSeconds * 1000;
           }, '#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.update_count')
           .then(milliseconds => {
-            logger.info(`now wait ${milliseconds / 1000}s`);
+            this.logger.info(`now wait ${milliseconds / 1000}s`);
             this.nm.options.waitTimeout = milliseconds;
             return this.nm.wait(milliseconds);
           }).then(() => {
@@ -63,14 +64,14 @@ exports.LiveVideo = class LiveVideo {
           })
         }
       }).catch((err) => {
-        logger.error(`checksum catch error: ${err}`);
+        this.logger.error(`checksum catch error: ${err}`);
         this.nm.refresh();
         this.checksum();
         // showMsgInput(nm, checksum);
       });
   }
   showMsgInput(callback) {
-    logger.info(`showMsgInput`);
+    this.logger.info(`showMsgInput`);
     return this.nm
       .wait('#TabLIst > li > a[stype="chat"]') // 操作栏聊天选项
       .click('#TabLIst > li > a[stype="chat"]')
@@ -84,13 +85,13 @@ exports.LiveVideo = class LiveVideo {
           this.showMsgInput(callback);
         }
       }).catch((err) => {
-        logger.error(`showMsgInput catch error: ${err}`);
+        this.logger.error(`showMsgInput catch error: ${err}`);
         this.nm.refresh();
         this.showMsgInput(callback);
       });
   }
   prepareLogin() {
-    logger.info(`prepareLogin`);
+    this.logger.info(`prepareLogin`);
     return this.nm
       .wait('#Dvinputmsg > div.extra > div')
       .click('#Dvinputmsg > div.extra > div')
@@ -121,7 +122,7 @@ exports.LiveVideo = class LiveVideo {
           return this.prepareLogin();
         });
       }).catch((err) => {
-        logger.error(`${err}`);
+        this.logger.error(`${err}`);
         this.nm.refresh();
       });
   }

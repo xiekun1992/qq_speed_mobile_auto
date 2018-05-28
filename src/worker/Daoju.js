@@ -1,5 +1,5 @@
 const Nightmare = require('nightmare');
-const logger = require('../utils/logger').getInstance();
+const logFactory = require('../utils/logger');
 
 exports.Daoju = class Daoju {
     constructor({show = process.env.show, entry}) {
@@ -8,33 +8,34 @@ exports.Daoju = class Daoju {
             waitTimeout: 10000
         });
         this.entry = entry;
-        logger.setTemplate(this.constructor.name, this.entry.account);
+        this.logger = logFactory.getInstance();
+        this.logger.setTemplate(this.constructor.name, this.entry.account);
         this.max = 150;
         this.min = 2;
     }
     checkSum() {
-        logger.info(`check sum`);
+        this.logger.info(`check sum`);
         // 特定时间统一抽奖
         return this.nm
         .number('#judou_num')
         .then(sum => {
-            logger.info(`check sum: ${sum}`);
+            this.logger.info(`check sum: ${sum}`);
             if (sum >= this.max) { // 每天5个，30天抽一次
                 return this.luckDraw();
             }
             return this.nm
                 .end()
                 .then(() => {
-                    logger.info(`app close without luck draw`);
+                    this.logger.info(`app close without luck draw`);
                     return true;
                 });
         })
         .catch(err => {
-            logger.error(`${err}`);
+            this.logger.error(`${err}`);
         })
     }
     luckDraw() {
-        logger.info(`luck draw`);
+        this.logger.info(`luck draw`);
         return this.nm // 物品列表
             .waitUntilVisible('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
             .click('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
@@ -48,24 +49,24 @@ exports.Daoju = class Daoju {
             .click('#confirmButtonId_speed')
             .number('#judou_num')
             .then(sum => {
-                logger.info(`check sum: ${sum}`);
+                this.logger.info(`check sum: ${sum}`);
                 if (sum >= this.min) {
                     return this.luckDraw();
                 } else {
                     return this.nm
                         .end()
                         .then(() => {
-                            logger.info(`app close after luck draw`);
+                            this.logger.info(`app close after luck draw`);
                             return true;
                         });
                 }
             })
             .catch(err => {
-                logger.error(`${err}`);
+                this.logger.error(`${err}`);
             });
     }
     sign() {
-        logger.info(`sign`);
+        this.logger.info(`sign`);
         return this.nm
             // .wait(3000)
             // // 等待签到按钮显示并签到
@@ -85,14 +86,14 @@ exports.Daoju = class Daoju {
                 return this.checkSum();
             })
             .catch(err => {
-                logger.error(`${err}`);
+                this.logger.error(`${err}`);
                 // 忽略等待奖励领取的报错
                 return this.checkSum();
             });
     }
     start() {
         console.log(this.entry.account);
-        logger.info(`start`);
+        this.logger.info(`start`);
         return this.nm
             .cookies.clearAll()
             .goto(this.entry.daoju_url)
@@ -115,8 +116,8 @@ exports.Daoju = class Daoju {
                 return this.sign();
             })
             .catch(err => {
-                logger.error(`${err}`);
-                logger.error(`login error, restart it`);
+                this.logger.error(`${err}`);
+                this.logger.error(`login error, restart it`);
                 return this.start();
             });
     }

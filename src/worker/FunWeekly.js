@@ -1,5 +1,5 @@
 const Nightmare = require('nightmare');
-const logger = require('../utils/logger').getInstance();
+const logFactory = require('../utils/logger');
 
 exports.FunWeekly = class FunWeekly {
     constructor({show = process.env.show, entry}) {
@@ -7,19 +7,20 @@ exports.FunWeekly = class FunWeekly {
             show
         });
         this.entry = entry;
-        logger.setTemplate(this.constructor.name, this.entry.account);
+        this.logger = logFactory.getInstance();
+        this.logger.setTemplate(this.constructor.name, this.entry.account);
     }
     isWeekDay() { // 判断当前是否是周末
         const dayOfWeek = new Date().getDay();
         if (dayOfWeek === 6 || dayOfWeek === 0) { // 是周六或周日
-            logger.info(`isWeekDay: ${!dayOfWeek? 'Sunday': 'Saturday'}`);
+            this.logger.info(`isWeekDay: ${!dayOfWeek? 'Sunday': 'Saturday'}`);
             return true;
         }
-        logger.info(`isWeekDay: no`);
+        this.logger.info(`isWeekDay: no`);
         return false;
     }
     receiveReward() {
-        logger.info(`receiveReward`);
+        this.logger.info(`receiveReward`);
         let findAvalPanel = () => {
             let els = document.querySelectorAll('.show_panel');
             for (let el of els) {
@@ -33,7 +34,7 @@ exports.FunWeekly = class FunWeekly {
             .wait(findAvalPanel)
             .evaluate(findAvalPanel)
             .then(id => {
-                logger.info(`receiveReward get panel id: ${id}`);
+                this.logger.info(`receiveReward get panel id: ${id}`);
                 return this.nm
                     .waitUntilVisible(`#${id} .content_a a.btn_lq.sp.db`)
                     .click(`#${id} .content_a a.btn_lq.sp.db`) // 领取周六奖励
@@ -47,14 +48,14 @@ exports.FunWeekly = class FunWeekly {
                     .wait(2000)
                     .end()
             }).then(() => {
-                logger.info(`app close`);
+                this.logger.info(`app close`);
                 return true;
             }).catch(err => {
-                logger.error(`${err}`);
+                this.logger.error(`${err}`);
             })
     }
     start() {
-        logger.info(`start`);
+        this.logger.info(`start`);
         if (!this.isWeekDay()) {
             return Promise.resolve(true);
         }
@@ -66,7 +67,7 @@ exports.FunWeekly = class FunWeekly {
             .wait(2000)
             .src('#loginFrame')
             .then((url) => {
-                logger.info(`get login frame src: ${url}`);
+                this.logger.info(`get login frame src: ${url}`);
                 return this.nm
                     .goto(url)
                     .waitUntilVisible('#u') // account
@@ -79,7 +80,7 @@ exports.FunWeekly = class FunWeekly {
             }).then(() => {
                 return this.receiveReward();
             }).catch(err => {
-                logger.error(`${err}`);
+                this.logger.error(`${err}`);
                 return this.start();
             });
     }
