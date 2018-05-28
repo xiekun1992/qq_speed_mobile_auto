@@ -76,11 +76,11 @@ exports.Treasure = class Treasure {
     return this.nm
       .viewport(400, 800)
       .goto(this.entry.treasure_url)
-      .wait('#u') // account
+      .waitUntilVisible('#u') // account
       .type('#u', this.entry.account)
-      .wait('#p') // password
+      .waitUntilVisible('#p') // password
       .type('#p', this.entry.password)
-      .wait('#go') // login button
+      .waitUntilVisible('#go') // login button
       .click('#go')
       .wait('#application > div.tabs > ul')
       .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
