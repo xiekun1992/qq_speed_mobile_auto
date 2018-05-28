@@ -53,7 +53,8 @@ exports.GuessCar =  class GuessCar {
         .evaluate((selector) => {
           return document.querySelector(selector).children.length;
         }, '#stamina')
-        .then(res => {
+        .then(async res => {
+          await this.luckDraw();
           if (res > 0) {
             return this.nm
               .waitUntilVisible('body > div.wrap > div > div > a')
@@ -149,6 +150,45 @@ exports.GuessCar =  class GuessCar {
         this.logger.error(`${err}`);
         this.logger.error(`analyze car again`);
         return this.analyzeCar();
+      });
+  }
+  luckDraw() {
+    this.logger.info(`luck draw`);
+    return this.nm
+      .number('body > div.wrap > div > div > div.box_inte.c > div.inte_l > p')
+      .then(res => {
+        if (res > 500) {
+          this.logger.info(`reward points: ${res} more than 500, begin to draw`);
+          return this.nm
+            .waitUntilVisible('body > div.wrap > div > div > div.box_inte.c > div.inte_l > a')
+            .click('body > div.wrap > div > div > div.box_inte.c > div.inte_l > a') // 开始抽奖
+            .then(this.draw.bind(this))
+        }
+        this.logger.info(`reward points: ${res} less than 500, exit`);
+        return false;
+      });
+  }
+  draw() {
+    this.logger.info(`draw`);
+    return this.nm
+      .wait(2000)
+      .waitUntilVisible('#swfcontent_start')
+      .touch('#swfcontent_start')
+      .wait(2000)
+      .waitUntilVisible('body > div.pop_mask.pop_tips5 > div > div > div > a')
+      .wait(1000)
+      .click('body > div.pop_mask.pop_tips5 > div > div > div > a') // 隐藏奖励提示框
+      .number('body > div.wrap > div > div > div.box_inte.c > div.inte_l > p') // 检查是否已经结束
+      .then(res => {
+        if (res >= 5) {
+          this.logger.info(`left times: ${res}, go on`);
+          return this.draw();
+        }
+        this.logger.info(`only ${res} left, can not continue, exit`);
+        return ;
+      }).catch(err => {
+        this.logger.error(err);
+        return this.luckDraw();
       });
   }
 }
