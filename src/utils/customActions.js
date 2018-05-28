@@ -42,8 +42,10 @@ Nightmare.action('touch', function (selector, done) {
   this.evaluate_now((selector) => {
     const el = document.querySelector(selector);
     if (el) {
-        let event = new TouchEvent('touchstart');
-        el.dispatchEvent(event);
+        let eventStart = new TouchEvent('touchstart');
+        el.dispatchEvent(eventStart);
+        let eventEnd = new TouchEvent('touchend');
+        el.dispatchEvent(eventEnd);
     } else {
         throw new Error(`.touch() Unable to find element by selector: ${selector}`);
     }
@@ -96,4 +98,50 @@ Nightmare.action('hasClass', function (selector, className, done) {
     }
     return el.classList.contains(className);
   }, done, selector, className);
+});
+
+
+Nightmare.action('loginFromQQMobileGameEntry', function (userInfo, done) {
+    const waitUntilVisible = (selector) => {
+        return new Promise((resolve, reject) => {
+            let times = 18, leftTimes = times, timer;
+            function checkElement() {
+                clearTimeout(timer);
+                const el = document.querySelectorAll(selector);
+                let visible = false;
+                if (el.length > 0){
+                    visible = true;
+                    for (let i = 0; i < el.length; i++) {
+                        if (el[i].getBoundingClientRect().width == 0 && el[i].getBoundingClientRect().height == 0) {
+                            visible = false;
+                            break;
+                        }
+                    }
+                }
+                if (!visible) {
+                    if (leftTimes <= 0) {
+                        reject(new Error(`.waitUntilVisible() timeout for ${times} trials`));
+                    }
+                    leftTimes--;
+                    timer = setTimeout(checkElement, 500);
+                } else {
+                    resolve(visible);
+                }
+            }
+        });
+    }
+    this.evaluate_now(async userInfo => {
+        await waitUntilVisible('#u') // account
+        await type('#u', this.entry.account)
+        await waitUntilVisible('#p') // password
+        await type('#p', this.entry.password)
+        await waitUntilVisible('#go') // login button
+        await click('#go');
+    }, done, userInfo);
+    // .waitUntilVisible('#u') // account
+    // .type('#u', this.entry.account)
+    // .waitUntilVisible('#p') // password
+    // .type('#p', this.entry.password)
+    // .waitUntilVisible('#go') // login button
+    // .click('#go')
 });
