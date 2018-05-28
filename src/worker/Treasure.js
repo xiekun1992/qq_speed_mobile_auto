@@ -66,8 +66,8 @@ exports.Treasure = class Treasure {
       .wait('#result_show')
       .screenshot(`./screen_shots/${new Date().format()}.png`)
       .click('#result_show > div > div.btn-box > a')
-      .then((res) => {
-        this.logger.info(`${res}`);
+      .then(() => {
+        this.logger.info(`treasure hunt finished`);
         return this.checkLeftTimes();
       });
   }
