@@ -1,5 +1,5 @@
 const Nightmare = require('nightmare');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger').getInstance();
 
 // 自动每日寻宝
 exports.Treasure = class Treasure {
@@ -9,10 +9,10 @@ exports.Treasure = class Treasure {
       waitTimeout: 1000 * 60 * 20
     });
     this.entry = entry;
-    this.name = `${this.constructor.name} - ${this.entry.account}`;
+    logger.setTemplate(this.constructor.name, this.entry.account);
   }
   checkLeftTimes() {
-    logger.showAndLog(`${this.name} >>> check left times`);
+    logger.info(`check left times`);
     // 领取上次寻宝的奖励，如果显示了的话
     this.nm
       .visible('#application > div.tabs > div:nth-child(4) > div > div.btn-box > a.yellow')
@@ -30,20 +30,20 @@ exports.Treasure = class Treasure {
       .wait(3000)
       .number('#leftTimes')
       .then(times => {
-        logger.showAndLog(`${this.name} >>> times left: ${times}`);
+        logger.info(`times left: ${times}`);
         if (times > 0) {
           return this.huntTreasure();
         } else {
-          logger.showAndLog(`${this.name} >>> times used up: ${times}`);
+          logger.info(`times used up: ${times}`);
           return this.nm.end().then(() => {
-            logger.showAndLog(`${this.name} >>> app close`);
+            logger.info(`app close`);
             return true;
           });
         }
       });
   }
   huntTreasure() {
-    logger.showAndLog(`${this.name} >>> hunt treasure`);
+    logger.info(`hunt treasure`);
     return this.nm
       .wait('#application > div.tabs > ul')
       .clickLast('#application > div.tabs > ul > li:not(.suo)')
@@ -66,12 +66,12 @@ exports.Treasure = class Treasure {
       .screenshot(`./screen_shots/${new Date().format()}.png`)
       .click('#result_show > div > div.btn-box > a')
       .then((res) => {
-        logger.showAndLog(`${this.name} >>> ${res}`);
+        logger.info(`${res}`);
         return this.checkLeftTimes();
       });
   }
   start() {
-    logger.showAndLog(`${this.name} >>> start`);
+    logger.info(`start`);
     return this.nm
       .viewport(400, 800)
       .goto(this.entry.treasure_url)
@@ -84,7 +84,7 @@ exports.Treasure = class Treasure {
       .wait('#application > div.tabs > ul')
       .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
       .then(res => {
-        logger.showAndLog(`${this.name} >>> is treasure hunting? ${res}`);
+        logger.info(`is treasure hunting? ${res}`);
         if (res) {
           return this.checkLeftTimes();
         } else {
@@ -95,9 +95,9 @@ exports.Treasure = class Treasure {
             });
         }
       }).catch(err => {
-        logger.showAndLog(`${this.name} >>> ${err}`);
+        logger.error(`${err}`);
         return this.nm.end().then(() => {
-          logger.showAndLog(`${this.name} >>> app close`);
+          logger.info(`app close`);
           return true;
         });
       });

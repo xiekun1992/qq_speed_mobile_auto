@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const logger = require('./logger').getInstance();
 
 exports.TaskQueue = class TaskQueue {
     constructor({maxParallelTasks = 2, tasks = [], delay = 3600}) {
@@ -6,7 +6,7 @@ exports.TaskQueue = class TaskQueue {
         this.runningTasks = [];
         this.maxParallelTasks = maxParallelTasks;
         this.delay = delay;
-        this.name = this.constructor.name;
+        logger.setTemplate(this.constructor.name);
         this.addTasksPromise = null;
     }
     run() {
@@ -29,13 +29,13 @@ exports.TaskQueue = class TaskQueue {
         this.runningTasks.forEach((Task) => {
             Task.start()
             .then(res => {
-                logger.showAndLog(`${this.name} >>> task finished successfully: ${res}`);
+                logger.info(`task finished successfully: ${res}`);
                 if (typeof res === 'boolean' && res === true) {
                     this.removeTask(Task);
                     this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
                 }
             }).catch(err => {
-                logger.showAndLog(`${this.name} >>> task fail with error: ${err}`);
+                logger.error(`task fail with error: ${err}`);
                 if (typeof res === 'boolean' && res === true) {
                     this.removeTask(Task);
                     this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
@@ -45,7 +45,7 @@ exports.TaskQueue = class TaskQueue {
     }
     scheduleTask() { // 没有需要执行的任务时，自动计划下一轮任务的时间
         if (this.roundTasks.length === 0) {
-            logger.showAndLog(`${this.name} >>> now the next turn will continue after ${this.delay}s`);
+            logger.info(`now the next turn will continue after ${this.delay}s`);
             const timer = setTimeout(() => {
                 this.run();
                 clearTimeout(timer);
