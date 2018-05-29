@@ -48,7 +48,7 @@ exports.LiveVideo = class LiveVideo {
             return true;
           });
         } else {
-          this.nm.evaluate(selector => {
+          return this.nm.evaluate(selector => {
             let time = document.querySelectorAll(selector)[0].innerText.split(':');
             let leftSeconds = parseInt(time[0]) * 60 + parseInt(time[1]);
             return leftSeconds * 1000;
@@ -58,15 +58,15 @@ exports.LiveVideo = class LiveVideo {
             this.nm.options.waitTimeout = milliseconds;
             return this.nm.wait(milliseconds);
           }).then(() => {
-            this.checksum();
+            return this.checksum();
           }).catch(() => {
-            this.checksum();
+            return this.checksum();
           })
         }
       }).catch((err) => {
         this.logger.error(`checksum catch error: ${err}`);
         this.nm.refresh();
-        this.checksum();
+        return this.checksum();
         // showMsgInput(nm, checksum);
       });
   }
@@ -82,12 +82,12 @@ exports.LiveVideo = class LiveVideo {
           return callback && callback.call(this);
         } else {
           this.nm.refresh();
-          this.showMsgInput(callback);
+          return this.showMsgInput(callback);
         }
       }).catch((err) => {
         this.logger.error(`showMsgInput catch error: ${err}`);
         this.nm.refresh();
-        this.showMsgInput(callback);
+        return this.showMsgInput(callback);
       });
   }
   prepareLogin() {
@@ -100,12 +100,12 @@ exports.LiveVideo = class LiveVideo {
         if (isvisible) {
           return this.login();
         } else {
-          this.prepareLogin();
+          return this.prepareLogin();
         }
       }).catch(() => {
         this.nm.refresh();
         // prepareLogin(nm, entry);
-        this.showMsgInput(() => {
+        return this.showMsgInput(() => {
           return this.prepareLogin();
         });
       });
@@ -114,6 +114,7 @@ exports.LiveVideo = class LiveVideo {
     this.logger.info(`start`);
     this.nm.options.waitTimeout = waitTimeout;
     return this.nm
+      .viewport(400, 800)
       .goto(this.entry.video_url)
       .wait('#DvRoomList > div.bd > ul')
       .wait(1000)
@@ -125,6 +126,7 @@ exports.LiveVideo = class LiveVideo {
       }).catch((err) => {
         this.logger.error(`${err}`);
         this.nm.refresh();
+        return this.start();
       });
   }
 }
