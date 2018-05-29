@@ -65,17 +65,9 @@ exports.Daoju = class Daoju {
                 this.logger.error(`${err}`);
             });
     }
-    sign() {
-        this.logger.info(`sign`);
+    getBeans() {
+        // 领取聚豆奖励
         return this.nm
-            // .wait(3000)
-            // // 等待签到按钮显示并签到
-            .waitUntilVisible('#logined_index')
-            // .wait('#btn_signin.sign-btn')
-            .waitUntilVisible('#btn_signin.sign-btn')
-            // .wait(3000)
-            .click('#btn_signin.sign-btn')
-            // 领取聚豆奖励
             .wait((selector, selector1) => {
                 return document.querySelector(selector) && !!document.querySelector(selector).getBoundingClientRect().width || document.querySelector(selector1) && !!document.querySelector(selector1).getBoundingClientRect().width;
             }, '#golingqu > a', '#signandget')
@@ -89,6 +81,25 @@ exports.Daoju = class Daoju {
                 this.logger.error(`${err}`);
                 // 忽略等待奖励领取的报错
                 return this.checkSum();
+            });
+    }
+    sign() {
+        this.logger.info(`sign`);
+        return this.nm
+            // .wait(3000)
+            // // 等待签到按钮显示并签到
+            .waitUntilVisible('#logined_index')
+            // .wait('#btn_signin.sign-btn')
+            .waitUntilVisible('#btn_signin.sign-btn')
+            // .wait(3000)
+            .click('#btn_signin.sign-btn')
+            .then(() => {
+                this.logger.info(`find sign button, signed`);
+                return this.getBeans();
+            }).catch(err => {
+                this.logger.error(`${err}`);
+                this.logger.info(`not find sign button, probably signed`);
+                return this.getBeans();
             });
     }
     start() {
