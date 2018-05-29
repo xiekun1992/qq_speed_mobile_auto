@@ -1,13 +1,14 @@
-const logger = require('./logger').getInstance();
-
+const logFactory = require('../utils/logger');
 exports.TaskQueue = class TaskQueue {
-    constructor({maxParallelTasks = 2, tasks = [], delay = 3600}) {
+    constructor({maxParallelTasks = 2, tasks = [], delay = 60}) {
         this.tasks = tasks;
         this.runningTasks = [];
         this.maxParallelTasks = maxParallelTasks;
         this.delay = delay;
-        logger.setTemplate(this.constructor.name);
+        this.logger = logFactory.getInstance();
+        this.logger.setTemplate(this.constructor.name);
         this.addTasksPromise = null;
+        this.timer = null;
     }
     run() {
         this.roundTasks = this.tasks.slice(0); // 需要执行的一轮任务
@@ -26,30 +27,33 @@ exports.TaskQueue = class TaskQueue {
         this.runningTasks.splice(this.runningTasks.indexOf(task), 1);
     }
     execTasks() { // 开始执行当前需要执行的任务
-        this.runningTasks.forEach((Task) => {
-            Task.start()
-            .then(res => {
-                logger.info(`task finished successfully: ${res}`);
-                if (typeof res === 'boolean' && res === true) {
-                    this.removeTask(Task);
-                    this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
-                }
-            }).catch(err => {
-                logger.error(`task fail with error: ${err}`);
-                if (typeof res === 'boolean' && res === true) {
-                    this.removeTask(Task);
-                    this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
-                }
+        if (this.roundTasks.length > 0) {
+            this.runningTasks.forEach((Task) => {
+                Task.start()
+                .then(res => {
+                    this.logger.info(`task finished successfully: ${res}`);
+                    if (typeof res === 'boolean' && res === true) {
+                        this.removeTask(Task);
+                        this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
+                    }
+                }).catch(err => {
+                    this.logger.error(`task fail with error: ${err}`);
+                    if (typeof res === 'boolean' && res === true) {
+                        this.removeTask(Task);
+                        this.addTasksPromise = this.addTasksPromise.then(() => this.addTasks());
+                    }
+                });
             });
-        });
+        } else {
+            this.scheduleTask();
+        }
     }
     scheduleTask() { // 没有需要执行的任务时，自动计划下一轮任务的时间
-        if (this.roundTasks.length === 0) {
-            logger.info(`now the next turn will continue after ${this.delay}s`);
-            const timer = setTimeout(() => {
-                this.run();
-                clearTimeout(timer);
-            }, this.delay * 1000);
-        }
+        this.logger.info(`now the next turn will continue after ${this.delay}s`);
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+            this.run();
+            clearTimeout(this.timer);
+        }, this.delay * 1000);
     }
 }
