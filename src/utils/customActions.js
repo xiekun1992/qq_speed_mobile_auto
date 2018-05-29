@@ -72,7 +72,7 @@ Nightmare.action('waitUntilVisible', function (selector, done) {
       if (err) return done(err);
       if (visible) return done(null, visible);
       if (leftTimes <= 0) {
-        return done(new Error(`.waitUntilVisible() timeout for ${times} trials`));
+        return done(new Error(`.waitUntilVisible() timeout for selector: ${selector}, after ${times} trials`));
       }
       leftTimes--;
       setTimeout(waitUntilVisible, 500);
