@@ -1,6 +1,6 @@
 const fs = require('fs');
 const analyzer = require('./analyzer');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger').getInstance();
 
 // 定义超时
 const limit = 5 * 60 * 1000;
@@ -17,12 +17,12 @@ function analyze(options) {
     .race([analyzer.analyze(), timeout(limit)])
     .then(token => {
       // 如果文件不存在将自动创建
-      logger.showAndLog(token);
+      logger.info(token);
       fs.writeFileSync(options.tokenPath, `${token}\n`);
       return token;
     })
     .catch(err => {
-      logger.showAndLog(err);
+      logger.error(err);
       throw new Error(err);
     });
 }

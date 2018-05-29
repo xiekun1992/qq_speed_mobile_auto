@@ -1,26 +1,26 @@
 const { spawn, exec } = require('child_process');
 const querystring = require('querystring');
-const logger = require('../utils/logger');
+const logger = require('../utils/logger').getInstance();
 
 
 function kill(pid) {
   exec(`taskkill /PID ${pid} /F /T`, (err, stdout, stderr) => {
     if (err) {
-      logger.showAndLog(err); 
+      logger.error(err); 
       throw err;
     }
-    logger.showAndLog(stdout);
-    logger.showAndLog(stderr);
+    logger.info(stdout);
+    logger.error(stderr);
   });
 }
 function killNemu() {
   exec(`taskkill /IM NemuBooter.exe /IM NemuPlayer.exe /IM NemuSVC.exe /IM NemuHeadless.exe /F /T`, (err, stdout, stderr) => {
     if (err) {
-      logger.showAndLog(err); 
+      logger.error(err); 
       // throw err;
     }
-    logger.showAndLog(stdout);
-    logger.showAndLog(stderr);
+    logger.info(stdout);
+    logger.error(stderr);
   });
 }
 
@@ -28,10 +28,10 @@ function analyze () {
     return new Promise((resolve, reject) => {
         const mu = spawn('D:\\Program Files (x86)\\MuMu\\emulator\\nemu\\EmulatorShell\\NemuPlayer.exe', []);
         mu.stderr.on('data', data => {
-          logger.showAndLog(`nemu player error due to: ${data}`);
+          logger.info(`nemu player error due to: ${data}`);
         });
         mu.on('close', (code, signal) => {
-          logger.showAndLog(`nemu player exited with code ${code}, signal ${signal}`);
+          logger.info(`nemu player exited with code ${code}, signal ${signal}`);
         });
         
         const ws = spawn('D:\\Program Files\\Wireshark\\tshark.exe', ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
@@ -53,12 +53,12 @@ function analyze () {
           }
         });
         ws.stderr.on('data', data => {
-          logger.showAndLog(`wireshark error due to: ${data}`);
+          logger.error(`wireshark error due to: ${data}`);
         });
         ws.on('close', (code, signal) => {
           // mu.kill();
           killNemu();
-          logger.showAndLog(`wireshark exited with code ${code}, signal ${signal}`);
+          logger.info(`wireshark exited with code ${code}, signal ${signal}`);
         });
     });
 }
