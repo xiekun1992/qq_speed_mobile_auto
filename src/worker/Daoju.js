@@ -17,6 +17,7 @@ exports.Daoju = class Daoju {
         this.logger.info(`check sum`);
         // 特定时间统一抽奖
         return this.nm
+        .waitUntilVisible('#judou_num')
         .number('#judou_num')
         .then(sum => {
             this.logger.info(`check sum: ${sum}`);
@@ -32,6 +33,11 @@ exports.Daoju = class Daoju {
         })
         .catch(err => {
             this.logger.error(`${err}`);
+            return this.nm
+                .end()
+                .then(() => {
+                    return true;
+                });
         })
     }
     luckDraw() {
@@ -47,6 +53,7 @@ exports.Daoju = class Daoju {
             .waitUntilVisible('#roleContentId_speed')
             .select('#roleContentId_speed', this.entry.account)
             .click('#confirmButtonId_speed')
+            .waitUntilVisible('#judou_num')
             .number('#judou_num')
             .then(sum => {
                 this.logger.info(`check sum: ${sum}`);
@@ -63,9 +70,15 @@ exports.Daoju = class Daoju {
             })
             .catch(err => {
                 this.logger.error(`${err}`);
+                return this.nm
+                    .end()
+                    .then(() => {
+                        return true;
+                    });
             });
     }
     getBeans() {
+        this.logger.info(`get beans`);
         // 领取聚豆奖励
         return this.nm
             .wait((selector, selector1) => {
@@ -103,8 +116,8 @@ exports.Daoju = class Daoju {
             });
     }
     start() {
-        console.log(this.entry.account);
         this.logger.info(`start`);
+        // this.nm.goto(this.entry.daoju_url).then(() => this.logger.info('here'));
         return this.nm
             .cookies.clearAll()
             .goto(this.entry.daoju_url)
@@ -119,6 +132,7 @@ exports.Daoju = class Daoju {
             .wait(3000)
             .title()
             .then((title) => {
+                this.logger.info(`page title: ${title}`);
                 if (!title) {
                     return this.nm.url().then(url => {
                         throw new Error(`tencent captcha coming, url: ${url}`);
@@ -128,8 +142,11 @@ exports.Daoju = class Daoju {
             })
             .catch(err => {
                 this.logger.error(`${err}`);
-                this.logger.error(`login error, restart it`);
-                return this.start();
+                return this.nm
+                    .end()
+                    .then(() => {
+                        return true;
+                    });
             });
     }
 }
