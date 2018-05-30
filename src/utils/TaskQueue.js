@@ -1,7 +1,7 @@
 const logFactory = require('../utils/logger');
 exports.TaskQueue = class TaskQueue {
-    constructor({maxParallelTasks = 2, tasks = [], delay = 60}) {
-        this.tasks = tasks;
+    constructor({maxParallelTasks = 2, tasksFactory = function() {}, delay = 1}) {
+        this.tasksFactory = tasksFactory;
         this.runningTasks = [];
         this.maxParallelTasks = maxParallelTasks;
         this.delay = delay;
@@ -11,8 +11,9 @@ exports.TaskQueue = class TaskQueue {
         this.timer = null;
     }
     run() {
-        this.roundTasks = this.tasks.slice(0); // 需要执行的一轮任务
+        this.roundTasks = this.tasksFactory(); // 需要执行的一轮任务
         this.addTasksPromise = this.addTasks();
+        return this;
     }
     addTasks() { // 从这轮任务中获取任务
         return new Promise((resolve, reject) => {

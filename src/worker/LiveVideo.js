@@ -42,7 +42,7 @@ exports.LiveVideo = class LiveVideo {
       .number('#dvGift > div > div > div.gin_gift_box > div.gin_bd > div.gin_roll_box > ul > li:nth-child(1) > div.thumb > div.sum')
       .then(sum => {
         this.logger.info(`flowers: ${sum}`);
-        if (sum > 2) {
+        if (sum > 1) {
           return this.nm.end().then(() => {
             this.logger.info(`app should close`);
             return true;

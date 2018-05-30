@@ -34,8 +34,7 @@ let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
 logger.setPath(logPath);
 logger.setTemplate('', '>>>');
 
-function main(token) {
-  let entries = parse(token);
+function tasksFactory(tasks, entries) {
   let taskQueue = [];
   // console.log(tasks)
   for (const Task of tasks) {
@@ -45,8 +44,13 @@ function main(token) {
       }));
     }
   }
-  new TaskQueue({
-    tasks: taskQueue
+  return taskQueue;
+}
+function main(token) {
+  let entries = parse(token);
+  let tq = new TaskQueue({
+    tasksFactory: tasksFactory.bind(null, tasks, entries),
+    maxParallelTasks: 2
   }).run();
 }
 if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
