@@ -50,7 +50,8 @@ function main(token) {
   let entries = parse(token);
   let tq = new TaskQueue({
     tasksFactory: tasksFactory.bind(null, tasks, entries),
-    maxParallelTasks: 2
+    maxParallelTasks: 2,
+    delay: 600
   }).run();
 }
 if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
