@@ -82,7 +82,8 @@ exports.Treasure = class Treasure {
       .type('#p', this.entry.password)
       .waitUntilVisible('#go') // login button
       .click('#go')
-      .wait('#application > div.tabs > ul')
+      .wait(2000)
+      .waitUntilVisible('#application > div.tabs > ul')
       .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
       .then(res => {
         this.logger.info(`is treasure hunting? ${res}`);
