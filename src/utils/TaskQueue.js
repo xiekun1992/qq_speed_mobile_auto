@@ -46,7 +46,10 @@ exports.TaskQueue = class TaskQueue {
                 });
             });
         } else {
-            this.scheduleTask();
+            // 当前没有任务需要继续并且本轮任务都已经执行之后进入下一次调度
+            if (this.roundTasks.length === 0) {
+                this.scheduleTask();
+            }
         }
     }
     scheduleTask() { // 没有需要执行的任务时，自动计划下一轮任务的时间

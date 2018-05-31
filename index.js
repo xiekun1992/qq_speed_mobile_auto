@@ -27,7 +27,7 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
+let tasks = [GuessCar, Daoju, Sign, FunWeekly];//, Treasure, LiveVideo];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
 // let tasks = [Daoju];
 
@@ -51,7 +51,7 @@ function main(token) {
   let tq = new TaskQueue({
     tasksFactory: tasksFactory.bind(null, tasks, entries),
     maxParallelTasks: 2,
-    delay: 600
+    // delay: 600
   }).run();
 }
 if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
