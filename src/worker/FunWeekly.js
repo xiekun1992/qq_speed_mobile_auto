@@ -52,6 +52,10 @@ exports.FunWeekly = class FunWeekly {
                 return true;
             }).catch(err => {
                 this.logger.error(`${err}`);
+                this.nm.end().then(() => {
+                    this.logger.info(`app close with error accur`);
+                    return true;
+                });
             })
     }
     start() {
