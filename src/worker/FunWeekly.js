@@ -42,9 +42,9 @@ exports.FunWeekly = class FunWeekly {
                     .click('#pop2 > div > a.pop_btn.sp.db') // 隐藏周六奖励弹框
                     .wait(1000)
                     .waitUntilVisible(`#${id} .content_b a.btn_lq.sp.db`)
-                    .click(`#${id} .content_b a.btn_lq.sp.db`) // 领取周六奖励
-                    .waitUntilVisible('#pop2 > div > a.pop_btn.sp.db')
-                    .click('#pop2 > div > a.pop_btn.sp.db') // 隐藏周六奖励弹框
+                    .click(`#${id} .content_b a.btn_lq.sp.db`) // 领取周日奖励
+                    // .waitUntilVisible('#pop2 > div > a.pop_btn.sp.db')
+                    // .click('#pop2 > div > a.pop_btn.sp.db') // 隐藏周日奖励弹框
                     .wait(2000)
                     .end()
             }).then(() => {
@@ -77,6 +77,15 @@ exports.FunWeekly = class FunWeekly {
                     .waitUntilVisible('#go') // login button
                     .click('#go')
                     .wait(2000)
+                    .wait('#spanBind_449016 > a')
+                    .click('#spanBind_449016 > a')
+                    .waitUntilVisible('#areaContentId_speed')
+                    .select('#areaContentId_speed', '1')
+                    .waitUntilVisible('#roleContentId_speed')
+                    .select('#roleContentId_speed', this.entry.account)
+                    .waitUntilVisible('#confirmButtonId_speed')
+                    .click('#confirmButtonId_speed')
+                    .wait(3000)
             }).then(() => {
                 return this.receiveReward();
             }).catch(err => {
