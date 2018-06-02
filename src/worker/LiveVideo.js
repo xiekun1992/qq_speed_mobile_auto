@@ -25,10 +25,10 @@ exports.LiveVideo = class LiveVideo {
       .wait('#go') // login button
       .click('#go')
       .then(() => {
-        this.showMsgInput(this.checksum);
+        return this.showMsgInput(this.checksum);
       }).catch(() => {
         this.nm.refresh();
-        this.login();
+        return this.login();
       });
   }
   checksum() {

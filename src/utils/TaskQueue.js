@@ -28,6 +28,8 @@ exports.TaskQueue = class TaskQueue {
         this.runningTasks.splice(this.runningTasks.indexOf(task), 1);
     }
     execTasks() { // 开始执行当前需要执行的任务
+        this.logger.info(`running tasks: ${this.runningTasks.length}`);
+        this.logger.info(`round tasks: ${this.roundTasks.length}`);
         if (this.runningTasks.length > 0) {
             this.runningTasks.forEach((Task) => {
                 Task.start()
