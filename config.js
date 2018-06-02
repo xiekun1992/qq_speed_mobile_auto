@@ -1,11 +1,10 @@
 const fs = require('fs');
 
-
 function parse(token) {
   token = token || fs.readFileSync(__dirname + '/token.txt');
-  const entries = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
+  const config = JSON.parse(fs.readFileSync(__dirname + '/config.json'));
 
-  for (let entry of entries) {
+  for (let entry of config.users) {
     entry.account = Buffer.from(entry.account, 'base64').toString();
     entry.password = Buffer.from(entry.password, 'base64').toString();
     // 替换url中的token
@@ -15,7 +14,7 @@ function parse(token) {
       }
     }
   }
-  return entries;
+  return config;
 }
 
 module.exports = {
