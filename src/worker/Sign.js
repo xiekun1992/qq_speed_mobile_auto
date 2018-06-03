@@ -26,7 +26,7 @@ exports.Sign = class Sign {
   }
   start() {
     return this.nm
-      .cookies.clearAll()
+      // .cookies.clearAll()
       .viewport(400, 800)
       .goto(this.entry.sign_url)
       .waitUntilVisible('#signButton')

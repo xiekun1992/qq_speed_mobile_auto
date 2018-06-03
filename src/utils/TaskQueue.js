@@ -9,6 +9,7 @@ exports.TaskQueue = class TaskQueue {
         this.logger.setTemplate(this.constructor.name);
         this.addTasksPromise = null;
         this.timer = null;
+        this.initWindowCoord();
     }
     run() {
         this.roundTasks = this.tasksFactory(); // 需要执行的一轮任务
@@ -27,11 +28,27 @@ exports.TaskQueue = class TaskQueue {
     removeTask(task) {
         this.runningTasks.splice(this.runningTasks.indexOf(task), 1);
     }
+    initWindowCoord() {
+        this.windowCoord = [];
+        this.windowCoord.length = this.maxParallelTasks;
+    }
+    setWindowCoord(task) {
+        let availPos = 0;
+        for (let i = 0; i < this.windowCoord.length; i++) {
+            if (!this.windowCoord[i]) {
+                this.windowCoord[i] = task;
+                availPos = i;
+                break;
+            }
+        }
+        task.nm.options.x = task.nm.options.width * availPos;
+    }
     execTasks() { // 开始执行当前需要执行的任务
         this.logger.info(`running tasks: ${this.runningTasks.length}`);
         this.logger.info(`round tasks: ${this.roundTasks.length}`);
         if (this.runningTasks.length > 0) {
             this.runningTasks.forEach((Task) => {
+                this.setWindowCoord(Task);
                 Task.start()
                 .then(res => {
                     this.logger.info(`task finished successfully: ${res}`);
@@ -55,6 +72,7 @@ exports.TaskQueue = class TaskQueue {
         }
     }
     scheduleTask() { // 没有需要执行的任务时，自动计划下一轮任务的时间
+        this.initWindowCoord();
         this.logger.info(`now the next turn will continue after ${this.delay}s`);
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
