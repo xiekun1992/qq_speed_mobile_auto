@@ -27,9 +27,11 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
+// let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
-// let tasks = [FunWeekly];
+let tasks = [Daoju];
+
+const windowWidth = 400, windowHeight = 800;
 
 logger.setPath(logPath);
 logger.setTemplate('', '>>>');
@@ -40,7 +42,11 @@ function tasksFactory(tasks, entries) {
   for (const Task of tasks) {
     for (const entry of entries) {
       taskQueue.push(new Task({
-        entry
+        entry,
+        x: 0,
+        y: 0,
+        width: windowWidth,
+        height: windowHeight
       }));
     }
   }

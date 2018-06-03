@@ -2,10 +2,10 @@ const Nightmare = require('nightmare');
 const logFactory = require('../utils/logger');
 
 exports.Daoju = class Daoju {
-    constructor({show = process.env.show, entry}) {
+    constructor({show = process.env.show, entry, x, y, width, height}) {
         this.nm = new Nightmare({
             show,
-            waitTimeout: 10000
+            waitTimeout: 10000, x, y, width, height
         });
         this.entry = entry;
         this.logger = logFactory.getInstance();

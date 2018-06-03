@@ -3,10 +3,10 @@ const logFactory = require('../utils/logger');
 
 // 自动每日寻宝
 exports.Treasure = class Treasure {
-  constructor({show = process.env.show, entry}) {
+  constructor({show = process.env.show, entry, x, y, width, height}) {
     this.nm = new Nightmare({
       show,
-      waitTimeout: 1000 * 60 * 20
+      waitTimeout: 1000 * 60 * 20, x, y, width, height
     });
     this.entry = entry;
     this.logger = logFactory.getInstance();

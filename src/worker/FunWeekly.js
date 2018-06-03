@@ -2,9 +2,9 @@ const Nightmare = require('nightmare');
 const logFactory = require('../utils/logger');
 
 exports.FunWeekly = class FunWeekly {
-    constructor({show = process.env.show, entry}) {
+    constructor({show = process.env.show, entry, x, y, width, height}) {
         this.nm = new Nightmare({
-            show
+            show, x, y, width, height
         });
         this.entry = entry;
         this.logger = logFactory.getInstance();
