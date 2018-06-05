@@ -27,9 +27,9 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-// let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
+let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
-let tasks = [Daoju];
+// let tasks = [Sign];
 
 const windowWidth = 400, windowHeight = 800;
 
