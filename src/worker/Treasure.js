@@ -44,6 +44,8 @@ exports.Treasure = class Treasure {
   }
   huntTreasure() {
     this.logger.info(`hunt treasure`);
+    let waitTimeout = this.nm.options.waitTimeout;
+    this.nm.options.waitTimeout = 1000 * 60 * 20;
     return this.nm
       .wait('#application > div.tabs > ul')
       .clickLast('#application > div.tabs > ul > li:not(.suo)')
@@ -66,8 +68,15 @@ exports.Treasure = class Treasure {
       .screenshot(`./screen_shots/${new Date().format()}.png`)
       .click('#result_show > div > div.btn-box > a')
       .then(() => {
+        this.nm.options.waitTimeout = waitTimeout;
         this.logger.info(`treasure hunt finished`);
         return this.checkLeftTimes();
+      }).catch(err => {
+        this.logger.error(`${err}`);
+        return this.nm.end().then(() => {
+          this.logger.info(`app close`);
+          return true;
+        });
       });
   }
   start() {
