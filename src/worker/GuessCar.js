@@ -89,10 +89,12 @@ exports.GuessCar =  class GuessCar {
     .wait(2500)
     .evaluate((imageName) => {
       let words = document.querySelectorAll('#inputName>li');
+      let clickedWords = []; // 去重处理，避免叠词问题
       for (let name of imageName) {
         for (let i = 0; i < words.length; i++) {
-          if (name === words[i].innerText) {
+          if (name === words[i].innerText && clickedWords.indexOf(words[i]) === -1) {
             words[i].click();
+            clickedWords.push(words[i]);
             break;
           }
         }
