@@ -5,8 +5,7 @@ const logFactory = require('../utils/logger');
 exports.Treasure = class Treasure {
   constructor({show = process.env.show, entry, x, y, width, height}) {
     this.nm = new Nightmare({
-      show,
-      waitTimeout: 1000 * 60 * 20, x, y, width, height
+      show, x, y, width, height
     });
     this.entry = entry;
     this.logger = logFactory.getInstance();
