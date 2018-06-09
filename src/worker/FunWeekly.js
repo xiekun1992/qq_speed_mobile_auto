@@ -81,15 +81,15 @@ exports.FunWeekly = class FunWeekly {
                     .waitUntilVisible('#go') // login button
                     .click('#go')
                     .wait(2000)
-                    .wait('#spanBind_449016 > a')
-                    .click('#spanBind_449016 > a')
-                    .waitUntilVisible('#areaContentId_speed')
-                    .select('#areaContentId_speed', '1')
-                    .waitUntilVisible('#roleContentId_speed')
-                    .select('#roleContentId_speed', this.entry.account)
-                    .waitUntilVisible('#confirmButtonId_speed')
-                    .click('#confirmButtonId_speed')
-                    .wait(3000)
+                    // .wait('#spanBind_449016 > a')
+                    // .click('#spanBind_449016 > a')
+                    // .waitUntilVisible('#areaContentId_speed')
+                    // .select('#areaContentId_speed', '1')
+                    // .waitUntilVisible('#roleContentId_speed')
+                    // .select('#roleContentId_speed', this.entry.account)
+                    // .waitUntilVisible('#confirmButtonId_speed')
+                    // .click('#confirmButtonId_speed')
+                    // .wait(3000)
             }).then(() => {
                 return this.receiveReward();
             }).catch(err => {
