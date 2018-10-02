@@ -3,12 +3,16 @@ const logFactory = require('../utils/logger');
 const waitTimeout = 1 * 60 * 1000;
 
 exports.LiveVideo = class LiveVideo {
-  constructor({show = process.env.show, entry, x, y, width, height}) {
-    this.nm = new Nightmare({
+  constructor({show = process.env.show, entry, x, y, width, height, proxy}) {
+    const option = {
       show,
       pollInterval: 2000,
       waitTimeout, x, y, width, height
-    });
+    };
+    if (proxy) {
+      option.switches = proxy;
+    }
+    this.nm = new Nightmare(option);
     this.entry = entry;
     this.logger = logFactory.getInstance();
     this.logger.setTemplate(this.constructor.name, this.entry.account);

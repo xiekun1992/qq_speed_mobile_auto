@@ -32,6 +32,16 @@ let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
 // let tasks = [Sign];
 
 const windowWidth = 400, windowHeight = 800;
+const proxy = {
+  'proxy-server': '120.236.137.65:8060',
+  // 'proxy-server': '116.7.8.68:9000',
+  // 'proxy-server': '120.78.78.141:8888',
+  // 'proxy-server': '27.46.20.71:8888',
+  // 'proxy-server': '113.116.125.21:9797',
+  // 'proxy-server': '183.62.207.242:32755',
+  // 'proxy-server': '183.17.231.78:33110',
+  'ignore-certificate-errors': true
+}
 
 logger.setPath(logPath);
 logger.setTemplate('', '>>>');
@@ -46,7 +56,8 @@ function tasksFactory(tasks, entries) {
         x: 0,
         y: 0,
         width: windowWidth,
-        height: windowHeight
+        height: windowHeight,
+        proxy
       }));
     }
   }

@@ -2,11 +2,15 @@ const Nightmare = require('nightmare');
 const logFactory = require('../utils/logger');
 
 exports.Sign = class Sign {
-  constructor({show = process.env.show, entry, x, y, width, height}) {
-    this.nm = new Nightmare({
-        show,
-        waitTimeout: 10000, x, y, width, height
-    });
+  constructor({show = process.env.show, entry, x, y, width, height, proxy}) {
+    const option = {
+      show,
+      waitTimeout: 10000, x, y, width, height
+    };
+    if (proxy) {
+      option.switches = proxy;
+    }
+    this.nm = new Nightmare(option);
     this.entry = entry;
     this.logger = logFactory.getInstance();
     this.logger.setTemplate(this.constructor.name, this.entry.account);
