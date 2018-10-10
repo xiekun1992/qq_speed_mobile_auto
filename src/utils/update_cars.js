@@ -36,7 +36,7 @@ const req = http.request({
     script.runInContext(context);
     
     // console.log(sandbox);
-    if (JSON.stringify(sandbox.carList).length > JSON.stringify(carList)) {
+    if (JSON.stringify(sandbox.carList).length > JSON.stringify(carList).length) {
       carList = sandbox.carList;
     }
     fs.writeFileSync(__dirname + '/cars.json', JSON.stringify(carList, null, 2));
