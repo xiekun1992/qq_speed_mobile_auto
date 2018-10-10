@@ -80,7 +80,7 @@ exports.FunWeekly = class FunWeekly {
                     .type('#p', this.entry.password)
                     .waitUntilVisible('#go') // login button
                     .click('#go')
-                    .wait(2000)
+                    .wait(6000)
                     // .wait('#spanBind_449016 > a')
                     // .click('#spanBind_449016 > a')
                     // .waitUntilVisible('#areaContentId_speed')
