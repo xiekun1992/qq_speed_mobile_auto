@@ -10,7 +10,7 @@ function parse(token) {
     // 替换url中的token
     for (let url in entry) {
       if (url.includes('url')) {
-        entry[url] = entry[url].replace(/uCMR7P8K/g, token);
+        entry[url] = entry[url].replace(/mU9XdAJS/g, token);
       }
     }
   }

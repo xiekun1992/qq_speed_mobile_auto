@@ -19,7 +19,7 @@ require('./src/utils/customActions');
 // 设置程序的根路径
 // 设置nightmare的electron窗口是否显示
 process.env.show = false;
-process.env.workerDebug = true;
+process.env.workerDebug = false;
 
 const workingDir = __dirname;
 const delay = 60 * 60 * 1000;
@@ -29,18 +29,18 @@ const multicastAddr = '230.185.192.108';
 let token;
 let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
-// let tasks = [Sign];
+// let tasks = [Treasure, LiveVideo];
 
 const windowWidth = 400, windowHeight = 800;
-const proxy = {
-  'proxy-server': '120.236.137.65:8060',
+const proxy = false && {
+  // 'proxy-server': '120.236.137.65:8060',
   // 'proxy-server': '116.7.8.68:9000',
   // 'proxy-server': '120.78.78.141:8888',
   // 'proxy-server': '27.46.20.71:8888',
   // 'proxy-server': '113.116.125.21:9797',
   // 'proxy-server': '183.62.207.242:32755',
-  // 'proxy-server': '183.17.231.78:33110',
-  'ignore-certificate-errors': true
+  'proxy-server': '120.92.74.189:3128',
+  'ignore-certificate-errors': false
 }
 
 logger.setPath(logPath);
@@ -66,13 +66,14 @@ function tasksFactory(tasks, entries) {
 function main(token) {
   let config = parse(token);
   let entries = config.users;
+
   let tq = new TaskQueue({
     tasksFactory: tasksFactory.bind(null, tasks, entries),
     maxParallelTasks: config.maxParallelTasks,
     // delay: 600
   }).run();
 }
-if (!process.env.workerDebug) { // 调试工作器的时候关闭分析器
+if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析器
   const server = dgram.createSocket('udp4');
   let host = '0.0.0.0';
   let aport = 9100; // 分析器端口
