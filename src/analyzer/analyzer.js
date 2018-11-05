@@ -37,14 +37,14 @@ function analyze () {
         const ws = spawn('D:\\Program Files\\Wireshark\\tshark.exe', ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
         ws.stdout.on('data', data => {
           data = data.toString();
-          // console.log(data)
-          if (/\/app\/actcenter\/index\/speed\/1/g.test(data)) {
+          console.log(data)
+          if (/\/php_cgi\/plive\/speed\/html\/index\.html/g.test(data)) {
             // console.log(mu.pid)
             ws.kill();
             // killNemu();
             // mu.kill();
         
-            let res = /\/app\/actcenter\/index\/speed\/1\?(\S+)/g.exec(data);
+            let res = /\/php_cgi\/plive\/speed\/html\/index\.html?(\S+)/g.exec(data);
             if (res && res.length > 0) {
               let queries = res.pop();
               let params = querystring.parse(queries);
