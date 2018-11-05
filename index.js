@@ -11,7 +11,7 @@ const {
   Daoju,
   FunWeekly
 } = require('./src/worker');
-const logger = require('./src/utils/logger');
+const Logger = require('./src/utils/logger');
 const { TaskQueue } = require('./src/utils/TaskQueue');
 require('./src/utils/utils');
 require('./src/utils/customActions');
@@ -43,8 +43,9 @@ const proxy = false && {
   'ignore-certificate-errors': false
 }
 
-logger.setPath(logPath);
-logger.setTemplate('', '>>>');
+const logger = Logger.getInstance();
+Logger.setPath(logPath);
+Logger.setTemplate('', '>>>');
 
 function tasksFactory(tasks, entries) {
   let taskQueue = [];
@@ -73,7 +74,7 @@ function main(token) {
     // delay: 600
   }).run();
 }
-if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析器
+if (true || !process.env.workerDebug) { // 调试工作器的时候关闭分析器
   const server = dgram.createSocket('udp4');
   let host = '0.0.0.0';
   let aport = 9100; // 分析器端口
