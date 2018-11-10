@@ -5,6 +5,7 @@ const logFactory = require('../utils/logger');
 exports.Treasure = class Treasure {
   constructor({show = process.env.show, entry, x, y, width, height, proxy}) {
     const option = {
+      alwaysOnTop: false,
       show, x, y, width, height
     };
     if (proxy) {

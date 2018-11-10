@@ -5,6 +5,7 @@ const logFactory = require('../utils/logger');
 exports.GuessCar =  class GuessCar {
   constructor ({show = process.env.show, entry, x, y, width, height, proxy}) {
     const option = {
+      alwaysOnTop: false,
       show,
       waitTimeout: 10000, x, y, width, height
     };

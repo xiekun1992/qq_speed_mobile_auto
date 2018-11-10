@@ -4,6 +4,7 @@ const logFactory = require('../utils/logger');
 exports.Sign = class Sign {
   constructor({show = process.env.show, entry, x, y, width, height, proxy}) {
     const option = {
+      alwaysOnTop: false,
       show,
       waitTimeout: 10000, x, y, width, height
     };

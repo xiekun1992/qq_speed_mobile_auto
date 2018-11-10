@@ -5,6 +5,7 @@ const waitTimeout = 1 * 60 * 1000;
 exports.LiveVideo = class LiveVideo {
   constructor({show = process.env.show, entry, x, y, width, height, proxy}) {
     const option = {
+      alwaysOnTop: false,
       show,
       pollInterval: 2000,
       waitTimeout, x, y, width, height
