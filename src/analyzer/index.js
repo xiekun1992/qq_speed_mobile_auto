@@ -14,7 +14,7 @@ function timeout(ms) {
 }
 function analyze(options) {
   return Promise
-    .race([analyzer.analyze(), timeout(limit)])
+    .race([analyzer.analyze(options), timeout(limit)])
     .then(token => {
       // 如果文件不存在将自动创建
       logger.info(token);

@@ -63,8 +63,9 @@ function tasksFactory(tasks, entries) {
   }
   return taskQueue;
 }
+let config = parse(token);
 function main(token) {
-  let config = parse(token);
+  config = parse(token);
   let entries = config.users;
 
   let tq = new TaskQueue({
@@ -115,7 +116,12 @@ if (execAnalyzer) { // 调试工作器的时候关闭分析器
 
   let timer;
   if (os.platform().includes('win')) { // windows 平台运行分析器，其他平台运行工作器
-    analyze({ tokenPath }).then(token => {
+
+    analyze({ 
+      tokenPath,
+      tsharkPath: config.tsharkPath, 
+      nemuPlayerPath: config.nemuPlayerPath
+    }).then(token => {
       timer = setInterval(() => {
         const msg = Buffer.from(`1:${token}`);
         server.send(msg, 0, msg.length, wport, multicastAddr);
