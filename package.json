@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "analysis": "node index.js --analysis",
+    "all": "node index.js --all",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],

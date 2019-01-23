@@ -19,7 +19,6 @@ require('./src/utils/customActions');
 // 设置程序的根路径
 // 设置nightmare的electron窗口是否显示
 process.env.show = false;
-process.env.workerDebug = false;
 
 const workingDir = __dirname;
 const delay = 60 * 60 * 1000;
@@ -74,7 +73,15 @@ function main(token) {
     // delay: 600
   }).run();
 }
-if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析器
+
+let execWorker = false, execAnalyzer = false;
+switch(process.argv[2]) {
+  case '--all': execAnalyzer = true; execWorker = true;break;
+  case '--analysis': execAnalyzer = true;break;
+  default: execWorker = true;
+}
+
+if (execAnalyzer) { // 调试工作器的时候关闭分析器
   const server = dgram.createSocket('udp4');
   let host = '0.0.0.0';
   let aport = 9100; // 分析器端口
@@ -86,16 +93,6 @@ if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析�
 
     message = message.toString();
     switch(message.charAt(0)){
-      case '1': 
-        if(!token) { // 获取token后保存本地一份然后启动任务
-          token = message.split(':').pop();
-          fs.writeFileSync(tokenPath, token);
-          let msg = Buffer.from('2');
-          // 告诉分析器停止发送信息
-          server.send(msg, 0, msg.length, aport, multicastAddr);
-          main(token);
-        };
-      break; // 分析器发送的内容
       case '2': 
         // 分析器停止发送信息
         clearInterval(timer);
@@ -107,7 +104,9 @@ if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析�
           if (time-- > 0) {
             logger.info('analyzer process has been terminated');
             server.close();
-            process.exit(0);
+            if (!execWorker) {
+              process.exit(0);
+            }
           }
         }, 1000);
       break; // 工作器发送的内容
@@ -123,14 +122,49 @@ if (true && !process.env.workerDebug) { // 调试工作器的时候关闭分析�
         logger.info(`send ${msg} to the wire...`);
       }, 2000);
     });
-  } else {
-    port = wport
   }
   server.bind(port, host, () => {
     server.setBroadcast(true);
     server.setMulticastTTL(128);
     server.addMembership(multicastAddr);
   });
-} else {
-  main(fs.readFileSync(tokenPath));
+} 
+if (execWorker) {
+  if (!execAnalyzer) {
+    main(fs.readFileSync(tokenPath));
+  } else {
+    const server = dgram.createSocket('udp4');
+    let host = '0.0.0.0';
+    let aport = 9100; // 分析器端口
+    let wport = 9101; // 工作器端口
+  
+    server.on('message', (message, remote) => {
+      logger.info(`receive message from: ${remote.address}:${remote.port} - ${message}`);
+  
+      message = message.toString();
+      switch(message.charAt(0)){
+        case '1': 
+          if(!token) { // 获取token后保存本地一份然后启动任务
+            token = message.split(':').pop();
+            fs.writeFileSync(tokenPath, token);
+            let msg = Buffer.from('2');
+            // 告诉分析器停止发送信息
+            server.send(msg, 0, msg.length, aport, multicastAddr);
+            let t = setTimeout(function() {
+              server.close();
+              clearTimeout(t);
+            }, 5000);
+            main(token);
+          };
+        break; // 分析器发送的内容
+      }
+    });
+  
+    port = wport
+    server.bind(port, host, () => {
+      server.setBroadcast(true);
+      server.setMulticastTTL(128);
+      server.addMembership(multicastAddr);
+    });
+  }
 }
