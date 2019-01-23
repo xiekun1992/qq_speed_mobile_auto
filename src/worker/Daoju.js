@@ -16,7 +16,7 @@ exports.Daoju = class Daoju {
         this.logger = logFactory.getInstance();
         this.logger.setTemplate(this.constructor.name, this.entry.account);
         this.max = 150;
-        this.min = 2;
+        this.min = 20;
     }
     checkSum() {
         this.logger.info(`check sum`);
@@ -48,10 +48,10 @@ exports.Daoju = class Daoju {
     luckDraw() {
         this.logger.info(`luck draw`);
         return this.nm // 物品列表
-            .waitUntilVisible('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
-            .click('#judou_wrapper_list>li:nth-last-child(2) #buy_btn')
-            .waitUntilVisible('#judou_wrapper_list>li:nth-last-child(2) > .tc1 > div.tc-cont.c > div > a')
-            .click('#judou_wrapper_list>li:nth-last-child(2) > .tc1 > div.tc-cont.c > div > a')
+            .waitUntilVisible('#judou_wrapper_list>li>input[value="1114"]~.exchange #buy_btn')
+            .click('#judou_wrapper_list>li>input[value="1114"]~.exchange #buy_btn')
+            .waitUntilVisible('#judou_wrapper_list>li>input[value="1114"] ~ .tc1 > div.tc-cont.c > div > a')
+            .click('#judou_wrapper_list>li>input[value="1114"] ~ .tc1 > div.tc-cont.c > div > a')
             .wait(1000)
             .waitUntilVisible('#areaContentId_speed')
             .select('#areaContentId_speed', '1')
