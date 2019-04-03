@@ -89,12 +89,12 @@ exports.Treasure = class Treasure {
     return this.nm
       .viewport(400, 800)
       .goto(this.entry.treasure_url)
-      .waitUntilVisible('#u') // account
-      .type('#u', this.entry.account)
-      .waitUntilVisible('#p') // password
-      .type('#p', this.entry.password)
-      .waitUntilVisible('#go') // login button
-      .click('#go')
+      // .waitUntilVisible('#u') // account
+      // .type('#u', this.entry.account)
+      // .waitUntilVisible('#p') // password
+      // .type('#p', this.entry.password)
+      // .waitUntilVisible('#go') // login button
+      // .click('#go')
       .wait(2000)
       .waitUntilVisible('#application > div.tabs > ul')
       .visible('#treasurenormal_popbox') // 检测当前是否在寻宝
