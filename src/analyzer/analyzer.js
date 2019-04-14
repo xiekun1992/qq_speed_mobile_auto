@@ -41,7 +41,7 @@ function analyze ({tokenPath, tsharkPath, nemuPlayerPath}) {
       logger.info(`nemu player exited with code ${code}, signal ${signal}`);
     });
     
-    const ws = spawn(path.resolve(tsharkPath, 'tshark.exe'), ['-i', 'WLAN', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
+    const ws = spawn(path.resolve(tsharkPath, 'tshark.exe'), ['-i', '无线网络连接', '-w', '-', 'port 80 and tcp[((tcp[12:1] & 0xf0) >> 2):4] = 0x47455420']);
     ws.stdout.on('data', data => {
       data = data.toString();
       console.log(data)
