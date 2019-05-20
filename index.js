@@ -9,7 +9,8 @@ const {
   LiveVideo,
   GuessCar,
   Daoju,
-  FunWeekly
+  FunWeekly,
+  Club
 } = require('./src/worker');
 const Logger = require('./src/utils/logger');
 const { TaskQueue } = require('./src/utils/TaskQueue');
@@ -26,9 +27,9 @@ const tokenPath = workingDir + '/token.txt';
 const logPath = workingDir + '/logs';
 const multicastAddr = '230.185.192.108';
 let token;
-let tasks = [GuessCar, Daoju, Sign, FunWeekly, Treasure, LiveVideo];
+let tasks = [GuessCar, Daoju, Sign, FunWeekly, Club, Treasure, LiveVideo];
 // let tasks = [GuessCar, Daoju, Sign, FunWeekly];
-// let tasks = [Treasure, LiveVideo];
+// let tasks = [Club];
 
 const windowWidth = 400, windowHeight = 800;
 const proxy = false && {
