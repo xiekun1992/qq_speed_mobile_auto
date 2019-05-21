@@ -1,4 +1,4 @@
-const { Treasure } = require('./Treasure');
+const { Treasure } = require('./Treasure/Treasure');
 const { LiveVideo } = require('./LiveVideo');
 const { Sign } = require('./Sign');
 const { GuessCar } = require('./GuessCar');
