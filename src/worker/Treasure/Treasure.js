@@ -29,18 +29,23 @@ exports.Treasure = class Treasure {
     return this.request().then(data => {
       this.logger.info(`start treasure request send: ${JSON.stringify(data)}`)
       if (data.res == 0) {
+        let waitTimeout = this.nm.options.waitTimeout;
+        this.nm.options.waitTimeout = 1000 * 60 * 20;
+
         this.logger.info(`start treasure success`)
         let stime = new Date(data.data.time)
-        let etime = stime.getTime() + 10*60*1000
+        let etime = stime.getTime() + 10*60*1000*1.01
         let interval = etime - Date.now()
         this.logger.info(`wait milliseconds: ${interval}`)
+
         return this.nm
         // 等待寻宝完成
         .wait(interval)
         .then(() => {
+          this.nm.options.waitTimeout = waitTimeout;
           return this.finish().then(data => {
-            this.logger.info(`end treasure request send`)
-            if (data.res == 0 && data.todayTimes < data.todaycanTimes) {
+            this.logger.info(`end treasure request send: ${JSON.stringify(data)}`)
+            if (data.res == 0 && data.data.todayTimes < data.data.todaycanTimes) {
               this.logger.info(`end treasure success, next turn`)
               return this.turn();
             } else {
